@@ -1,0 +1,19 @@
+{
+  "name": "cashflow",
+  "description": "Personal finance ledger for AI agents — query spending, track bills, categorize transactions",
+  "version": "0.1.0",
+  "author": {
+    "name": "Adam Messinger",
+    "url": "https://cashflow.tech"
+  },
+  "homepage": "https://cashflow.tech/about/docs",
+  "repository": "https://github.com/cashflow-tech/cashflow-plugin",
+  "keywords": [
+    "finance",
+    "personal-finance",
+    "budgeting",
+    "transactions",
+    "plaid",
+    "mcp"
+  ]
+}
