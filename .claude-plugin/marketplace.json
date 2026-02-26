@@ -1,0 +1,16 @@
+{
+  "name": "cashflow",
+  "owner": {
+    "name": "Adam Messinger"
+  },
+  "metadata": {
+    "description": "Personal finance ledger for AI agents"
+  },
+  "plugins": [
+    {
+      "name": "cashflow",
+      "source": "./",
+      "description": "Query spending, track bills, categorize transactions via MCP"
+    }
+  ]
+}

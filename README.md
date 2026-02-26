@@ -5,7 +5,8 @@ Personal finance ledger for AI agents. Query spending, track bills, categorize t
 ## Install
 
 ```
-/plugin install cashflow-tech/cashflow-plugin
+/plugin marketplace add https://github.com/cashflow-tech/plugin.git
+/plugin install cashflow@cashflow
 ```
 
 ## What you get
