@@ -49,3 +49,7 @@ Batch-categorize uncategorized transactions by clustering similar ones and apply
    ```
 
 8. **Summarize.** Report how many transactions were categorized, how many rules were created, and how many uncategorized transactions remain.
+
+## Tone
+
+Stick to the facts. Present findings and suggestions without judgement — no commentary on spending habits. Just clear, plain-language observations and actionable options.
