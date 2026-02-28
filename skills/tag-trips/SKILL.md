@@ -11,6 +11,17 @@ Discover trips from transaction patterns and external sources, then tag related 
 
 Only the cashflow MCP tools are required. Every other data source (email, calendar, browser) is **opportunistic** — attempt each, use what's available, skip gracefully if unavailable. The workflow always progresses even if every external source fails.
 
+## Scratchpad
+
+Maintain a scratchpad file at `/tmp/tag-trips-scratchpad.md` throughout the workflow. Write to it as you go and re-read it if context gets compacted. Track:
+
+- **Discovered trips**: name, dates, destination, status (confirmed/pending)
+- **Resolved anchors**: which big charges have been looked up, what trip they map to
+- **Unresolved charges**: big transactions still needing email lookup or user input
+- **Batch progress**: which cursor you're on, how many batches completed
+
+Update the scratchpad after each major step (anchor resolution, trip confirmation, tagging batch). This is your durable state — if the conversation compacts, read the scratchpad to recover where you left off.
+
 ## Workflow
 
 ### 1. Gather data
