@@ -13,19 +13,19 @@ Only the cashflow MCP tools are required. Every other data source (email, calend
 
 ## Workflow
 
-### 1. Gather data & find biggest gaps
+### 1. Gather data
 
 Run these queries in parallel:
 
 ```json
-query { "by": ["party"], "split_by": "tag", "group": "Travel", "period": "last_90d", "type": "expense", "top": 25 }
+query { "detail": true, "group": "Travel", "period": "last_90d", "sort": "-amount", "limit": 200 }
 query { "detail": true, "is_uncategorized": true, "amount_min": 50, "period": "last_90d", "sort": "-amount", "limit": 200 }
 admin { "entity": "tag", "action": "list" }
 ```
 
 If `$ARGUMENTS` contains a time period, use that instead of `last_90d`.
 
-The first query is the key discovery tool: it shows travel spend by party with a tag split, so you can immediately see where the biggest *untagged* dollar amounts are (e.g. "Airbnb $8,200 total — $5,100 Untagged, $1,800 Beach Trip, $1,300 Holidays"). These untagged gaps are the highest-value tagging opportunities and should be worked first.
+The first query returns individual Travel transactions sorted largest-first. The biggest untagged charges (flights, multi-night hotels) are trip anchors — work those first.
 
 Then, for each existing tag that looks like a trip name (e.g. "Tokyo Mar 2026", "Hawaii Jan 2026"), fetch its tagged transactions:
 
@@ -43,10 +43,9 @@ Build the trip list from three sources, in priority order:
 
 **Anchor-first discovery** (primary method): Work the biggest untagged charges first — large airfares and multi-night hotel stays are trip anchors. They define the destination and travel dates for the entire trip.
 
-1. From Step 1's party/tag split, identify the largest untagged amounts (airlines, Airbnb, hotels).
-2. Pull detail for those charges: `query { "detail": true, "group": "Travel", "party": "United Airlines", "period": "last_90d", "sort": "-amount", "limit": 50 }`.
-3. **Look up each big charge in email** (if available) — search for the airline/hotel name + approximate amount or confirmation number. Airline confirmation emails show the actual flight dates and route (SFO→OGG, Dec 20–27 = Maui trip). Hotel confirmations show check-in/check-out dates and location. This is the fastest way to pin down a trip — the transaction date alone is often the *booking* date, not the travel date. Without email, cluster by transaction dates instead.
-4. Once an anchor defines a trip (dates + destination), all smaller untagged Travel expenses in that window cluster naturally.
+1. From Step 1's transaction list, work down the biggest untagged charges — these are the anchors.
+2. **Look up each anchor in email** (if available) — search for the airline/hotel name + approximate amount or confirmation number. Airline confirmation emails show the actual flight dates and route (SFO→OGG, Dec 20–27 = Maui trip). Hotel confirmations show check-in/check-out dates and location. This is the fastest way to pin down a trip — the transaction date alone is often the *booking* date, not the travel date. Without email, cluster by transaction dates instead.
+3. Once an anchor defines a trip (dates + destination), all smaller untagged Travel expenses in that window cluster naturally.
 
 - **Clustering**: Group remaining Travel expenses that fall within a few days of an anchor. A flight + hotel in the same week = a trip.
 - **Unknown parties**: For smaller charges with unrecognized party names, web search the raw description to identify the business. Look for the business name, and check any domain names or phone numbers in the description. Often the party name alone reveals the location (e.g. "MARRIOTT WAIKIKI" → hotel in Honolulu). Skip this for already-known parties (airlines, hotel chains, Airbnb, etc.).
