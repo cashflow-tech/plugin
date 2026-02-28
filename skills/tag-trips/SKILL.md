@@ -45,31 +45,33 @@ Work through the list top to bottom (biggest first). For each transaction:
 
 **If untagged** — resolve it:
 
-#### a. Try to identify the trip via email (if available)
+#### Identify the trip
 
-Search email in the main agent using this fallback chain:
-1. Confirmation number (if visible in the raw description)
-2. Exact dollar amount (no rounding — e.g. "$1,268.51")
-3. Party name + approximate transaction date
+When you can't tell which trip a transaction belongs to from the description alone, try these in order. Stop as soon as one works.
 
-If a promising result comes back, use a **subagent** (Task tool) to read the full message and extract just: travel dates, route/destination, passengers, amount. Confirmation emails are extremely verbose — never read them in the main context.
+**Email searches** (if available) — search in the main agent, read in a subagent:
+1. Email search the **confirmation number** if one is visible in the raw description — highly specific
+2. Email search the **exact dollar amount** including cents (e.g. "$1,268.51") with a date range near the transaction date
+3. Email search the **party name** with a date range near the transaction date
 
-#### b. Try web search (for hotels, tours, unfamiliar parties)
+If a promising email result comes back, use a **subagent** (Task tool) to read the full message and extract just: travel dates, route/destination, passengers, amount. Confirmation emails are extremely verbose — never read them in the main context.
 
-If email doesn't work or isn't available, and the party is a hotel, tour operator, or unfamiliar name: web search the party name, phone number, or domain from the raw description. Often the name or country code in the description reveals the location. Use the transaction date as the travel date.
+**Web searches** (if available) — for hotels, tours, unfamiliar parties:
+4. Web search the **cleaned/display name** (e.g. "Tock Inc")
+5. Web search the **raw description** — country codes, location info, or abbreviations often reveal the destination
+6. Web search any **phone numbers or domain names** embedded in the raw description
 
-#### c. Ask the user
+**Last resort:**
+7. **Ask the user** — show the transaction details and ask which trip it belongs to, or whether to skip it
 
-If you can't resolve it, ask. Show the transaction details and ask which trip it belongs to, or whether to skip it.
-
-#### d. Match to a known trip
+#### Match to a known trip
 
 Each trip in the scratchpad has three fields: **tag**, **destination**, and **date range**. Match by destination + date overlap:
 
 - **Close match** (same destination, dates overlap or within a few days): expand the existing trip's date range to include this transaction. Tag with the existing trip's tag.
 - **No match** (new destination, or dates far from any known trip): create a new trip entry in the scratchpad with a tag, destination, and date range. **Trip naming**: "Destination Mon YYYY" format (e.g. "Maui Dec 2024"). Multi-city trips use the primary destination or "City1-City2 Mon YYYY".
 
-#### e. Tag it
+#### Tag it
 
 ```json
 annotate { "action": "tag", "transaction_ids": ["<id>"], "tag_name": "Maui Dec 2024" }
