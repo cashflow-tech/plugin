@@ -11,7 +11,7 @@
       "name": "cashflow",
       "source": "./",
       "description": "Query spending, track bills, categorize transactions via MCP",
-      "version": "0.2.0"
+      "version": "0.3.0"
     }
   ]
 }
