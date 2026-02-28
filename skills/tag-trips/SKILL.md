@@ -17,7 +17,9 @@ Use the **todo tools** (TaskCreate / TaskUpdate) to track progress. This state s
 
 During the clustering phase, create one task per candidate trip:
 - **Subject**: "Tag: Morocco Mar 2026 (5 txns, $34k)"
-- **Description**: tag name, destination, travel dates, transaction IDs, key charges, and any notes about confidence or open questions
+- **Description**: tag name, destination, travel dates, **full transaction UUIDs**, key charges, and any notes about confidence or open questions
+
+Always store full UUIDs (not truncated prefixes) in task descriptions. This is critical — context compaction and session restarts destroy in-context IDs. With UUIDs in tasks, you can tag directly without re-querying.
 
 Also create a task for unresolved transactions that couldn't be matched to any trip.
 

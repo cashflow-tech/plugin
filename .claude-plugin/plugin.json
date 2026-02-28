@@ -1,7 +1,7 @@
 {
   "name": "cashflow",
   "description": "Personal finance ledger for AI agents. Connect your bank accounts via Plaid, then query spending, track recurring bills, categorize transactions, and get financial recaps — all through MCP tools with OAuth authentication.",
-  "version": "0.3.4",
+  "version": "0.3.5",
   "author": {
     "name": "Adam Messinger",
     "url": "https://cashflow.tech"
