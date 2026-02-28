@@ -18,14 +18,14 @@ Only the cashflow MCP tools are required. Every other data source (email, calend
 Run these queries in parallel:
 
 ```json
-query { "detail": true, "group": "Travel", "period": "last_90d", "sort": "-amount", "limit": 200 }
-query { "detail": true, "is_uncategorized": true, "amount_min": 50, "period": "last_90d", "sort": "-amount", "limit": 200 }
+query { "detail": true, "group": "Travel", "period": "last_90d", "sort": "-amount", "limit": 100 }
+query { "detail": true, "is_uncategorized": true, "amount_min": 50, "period": "last_90d", "sort": "-amount", "limit": 100 }
 admin { "entity": "tag", "action": "list" }
 ```
 
 If `$ARGUMENTS` contains a time period, use that instead of `last_90d`.
 
-The first query returns individual Travel transactions sorted largest-first. The biggest untagged charges (flights, multi-night hotels) are trip anchors — work those first.
+**Work in batches of ~100 transactions.** The first query returns the 100 largest Travel transactions. Discover trips, tag, and verify this batch before fetching the next page. Sorting by `-amount` means each batch is progressively less important — the biggest anchors come first, and later batches are smaller charges that cluster around already-discovered trips. If there are more results (`has_more: true`), use the `cursor` to fetch the next batch after finishing the current one.
 
 Then, for each existing tag that looks like a trip name (e.g. "Tokyo Mar 2026", "Hawaii Jan 2026"), fetch its tagged transactions:
 
