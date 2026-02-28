@@ -9,21 +9,23 @@ Discover trips from transaction patterns and external sources, then tag related 
 
 ## Prerequisites
 
-Only the cashflow MCP tools are required. Every other data source (Gmail, Calendar, browser) is **opportunistic** — attempt each, use what's available, skip gracefully if unavailable. The workflow always progresses even if every external source fails.
+Only the cashflow MCP tools are required. Every other data source (email, calendar, browser) is **opportunistic** — attempt each, use what's available, skip gracefully if unavailable. The workflow always progresses even if every external source fails.
 
 ## Workflow
 
-### 1. Gather data
+### 1. Gather data & find biggest gaps
 
-Run three queries in parallel, plus fetch existing tags:
+Run these queries in parallel:
 
 ```json
-query { "detail": true, "group": "Travel", "period": "last_90d", "sort": "-amount", "limit": 200 }
+query { "by": ["party"], "split_by": "tag", "group": "Travel", "period": "last_90d", "type": "expense", "top": 25 }
 query { "detail": true, "is_uncategorized": true, "amount_min": 50, "period": "last_90d", "sort": "-amount", "limit": 200 }
 admin { "entity": "tag", "action": "list" }
 ```
 
 If `$ARGUMENTS` contains a time period, use that instead of `last_90d`.
+
+The first query is the key discovery tool: it shows travel spend by party with a tag split, so you can immediately see where the biggest *untagged* dollar amounts are (e.g. "Airbnb $8,200 total — $5,100 Untagged, $1,800 Beach Trip, $1,300 Holidays"). These untagged gaps are the highest-value tagging opportunities and should be worked first.
 
 Then, for each existing tag that looks like a trip name (e.g. "Tokyo Mar 2026", "Hawaii Jan 2026"), fetch its tagged transactions:
 
@@ -33,30 +35,30 @@ query { "detail": true, "tag": "Tokyo Mar 2026", "period": "all", "limit": 200 }
 
 These tagged transactions define existing trips — their dates, destinations, and parties are the strongest signal for trip discovery.
 
-### 2. Identify unknown parties
-
-For expenses with unrecognized party names, web search the raw description to identify the business. Look for the business name, and check any domain names or phone numbers in the description. Often the party name alone is enough to categorize (e.g. "MARRIOTT WAIKIKI" → hotel in Honolulu). Skip this step for already-known parties (airlines, hotel chains, Airbnb, etc.).
-
-### 3. Discover trips
+### 2. Discover trips
 
 Build the trip list from three sources, in priority order:
 
 **Existing tags** (highest confidence): Each trip-named tag is an established trip. Pull date range and destination from its tagged transactions. These trips are already confirmed — the question is whether they have *untagged* expenses that should be added.
 
-**Transaction clustering** (primary discovery): Among *untagged* Travel-category expenses:
-- **Anchor transactions**: Round-trip flights and multi-night hotel stays define date ranges and destinations.
-- **Clustering**: Group Travel expenses that fall within a few days of each other. A flight + hotel in the same week = a trip.
-- **Date correction**: Flight transaction dates are often booking dates, not travel dates. If a flight doesn't cluster with hotels/other travel expenses, check Gmail for the airline + amount to find the actual travel dates. If ambiguous, present it to the user rather than guessing.
+**Anchor-first discovery** (primary method): Work the biggest untagged charges first — large airfares and multi-night hotel stays are trip anchors. They define the destination and travel dates for the entire trip.
+
+1. From Step 1's party/tag split, identify the largest untagged amounts (airlines, Airbnb, hotels).
+2. Pull detail for those charges: `query { "detail": true, "group": "Travel", "party": "United Airlines", "period": "last_90d", "sort": "-amount", "limit": 50 }`.
+3. **Look up each big charge in email** (if available) — search for the airline/hotel name + approximate amount or confirmation number. Airline confirmation emails show the actual flight dates and route (SFO→OGG, Dec 20–27 = Maui trip). Hotel confirmations show check-in/check-out dates and location. This is the fastest way to pin down a trip — the transaction date alone is often the *booking* date, not the travel date. Without email, cluster by transaction dates instead.
+4. Once an anchor defines a trip (dates + destination), all smaller untagged Travel expenses in that window cluster naturally.
+
+- **Clustering**: Group remaining Travel expenses that fall within a few days of an anchor. A flight + hotel in the same week = a trip.
+- **Unknown parties**: For smaller charges with unrecognized party names, web search the raw description to identify the business. Look for the business name, and check any domain names or phone numbers in the description. Often the party name alone reveals the location (e.g. "MARRIOTT WAIKIKI" → hotel in Honolulu). Skip this for already-known parties (airlines, hotel chains, Airbnb, etc.).
 - **Foreign country codes**: Search raw descriptions for 3-letter ISO country codes (NZL, GBR, MEX, JPN, etc.) within trip date windows. These are high-confidence trip indicators even for non-Travel categories (coffee shops, groceries, restaurants abroad).
 
-**External sources** (all optional — try each, skip gracefully if unavailable):
-- **Gmail**: Search for receipts by dollar amount or party name. Extract actual travel dates and destinations from itineraries/confirmations. Especially useful for flights booked far in advance.
-- **Google Calendar**: Search for travel-related events (flight numbers, hotel names, city names) to confirm or discover trip dates.
+**Other external sources** (all optional — try each, skip gracefully if unavailable):
+- **Calendar**: Search for travel-related events (flight numbers, hotel names, city names) to confirm or discover trip dates.
 - **Kayak** (browser, if available): Check past and upcoming trips for aggregated trip info.
 
-If none of these sources are available, proceed with tags + transactions alone.
+If no external sources are available, proceed with tags + transaction clustering alone.
 
-### 4. Present trip list for confirmation
+### 3. Present trip list for confirmation
 
 Present trips in batches of 5-8. For each trip, show the **filter expression** that defines it (not raw transaction lists) so the user can review and adjust the definition. Use AskUserQuestion for structured yes/no confirmations.
 
@@ -75,17 +77,19 @@ Present trips in batches of 5-8. For each trip, show the **filter expression** t
 
 Ask the user to confirm, adjust names, merge/split trips, or add trips the skill missed.
 
-### 5. Match expenses to confirmed trips
+### 4. Match expenses to confirmed trips
 
-For each confirmed trip (both existing and new), search across all accounts by default (households may have multiple people/accounts on the same trip). Find matching *untagged* Travel-group expenses:
-- Flights, Hotels, Rental Car, Vacation category expenses whose travel dates fall within the trip window
-- Allow a pre-booking buffer (flights can be months ahead) and post-travel buffer (+7 days for delayed charges)
+Step 2 discovered trips from the biggest charges. Now do a comprehensive sweep for *all* untagged Travel expenses that fall within each confirmed trip's date window — including smaller charges that weren't part of the initial discovery.
+
+Search across all accounts by default (households may have multiple people/accounts on the same trip):
+- Flights, Hotels, Rental Car, Vacation category expenses within the trip window
+- Allow a post-travel buffer (+7 days for delayed charges)
 - Include foreign transactions (identified by country codes in raw descriptions) as high-confidence candidates
 - Do NOT auto-tag non-Travel-category expenses (dining, rideshare, etc.) — these are ambiguous
 
 For expenses where the transaction date doesn't match any trip window, use email receipts (if available) to determine actual travel dates before giving up.
 
-### 6. Tag with dry_run preview
+### 5. Tag with dry_run preview
 
 Use filter-based tagging with `dry_run` to preview matches before committing:
 
@@ -107,7 +111,7 @@ annotate { "action": "tag", "filter": { "search": "NZL", "start": "2025-09-01", 
 
 For curated lists (individual transactions cherry-picked after review), use `transaction_ids` directly — no dry_run needed since the list is already deliberate.
 
-### 6b. Verify & correct
+### 6. Verify & correct
 
 After tagging each trip, query it back:
 
