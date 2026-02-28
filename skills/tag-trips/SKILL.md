@@ -38,7 +38,7 @@ If `$ARGUMENTS` contains a time period, use that instead of `last_90d`.
 
 Work through the list top to bottom (biggest first). For each transaction:
 
-**If already tagged** — add the trip to the scratchpad if it's not there yet (infer destination and date range from the transaction). Move on.
+**If already tagged** — if the tag isn't in the scratchpad yet, add it (infer destination and date range from the transaction). Move on.
 
 **If untagged** — resolve it:
 
