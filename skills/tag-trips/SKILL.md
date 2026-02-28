@@ -59,11 +59,12 @@ If email doesn't work or isn't available, and the party is a hotel, tour operato
 
 If you can't resolve it, ask. Show the transaction details and ask which trip it belongs to, or whether to skip it.
 
-#### d. Match to a trip
+#### d. Match to a known trip
 
-Check the scratchpad for a trip whose date range covers (or is close to) this transaction. If it matches, tag the transaction with that trip name. If no trip matches, create a new trip entry in the scratchpad and tag the transaction.
+Each trip in the scratchpad has three fields: **tag**, **destination**, and **date range**. Match by destination + date overlap:
 
-**Trip naming**: "Destination Mon YYYY" format (e.g. "Maui Dec 2024"). Multi-city trips use the primary destination or "City1-City2 Mon YYYY".
+- **Close match** (same destination, dates overlap or within a few days): expand the existing trip's date range to include this transaction. Tag with the existing trip's tag.
+- **No match** (new destination, or dates far from any known trip): create a new trip entry in the scratchpad with a tag, destination, and date range. **Trip naming**: "Destination Mon YYYY" format (e.g. "Maui Dec 2024"). Multi-city trips use the primary destination or "City1-City2 Mon YYYY".
 
 #### e. Tag it
 
