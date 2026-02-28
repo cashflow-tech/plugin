@@ -20,6 +20,7 @@ Maintain a scratchpad file at `/tmp/tag-trips.md` with a table of known trips:
 |-----|-------------|-------|-----|
 | Hawaii Dec 2024 | Maui | 2024-12-20 | 2024-12-28 |
 | Europe Summer 2025 | Europe | 2025-06-15 | 2025-07-10 |
+| Mexico Mar 2025 | Mexico | 2025-03 | |
 ```
 
 Update this file as you go. If context compacts, re-read it to recover state.
@@ -37,6 +38,8 @@ If `$ARGUMENTS` contains a time period, use that instead of `last_90d`.
 ### 2. Process each transaction
 
 Work through the list top to bottom (biggest first). For each transaction:
+
+**If a refund** (positive amount) — tag it with the same trip as the original charge. If the original isn't tagged yet, skip and come back to it.
 
 **If already tagged** — if the tag isn't in the scratchpad yet, add it. Infer what you can: the tag name gives the destination and approximate dates (e.g. "Maui Dec 2024" → destination: Maui, dates: Dec 2024), and the transaction itself gives one concrete date. The date range may be partial at first — it gets refined as more tagged transactions are seen. Move on.
 
@@ -79,7 +82,7 @@ If `has_more: true`, use the `cursor` to fetch the next 100. Later batches are p
 ### 4. Report
 
 ```json
-query { "by": ["tag"], "group": "Travel", "period": "last_90d", "type": "expense" }
+query { "by": ["tag"], "group": "Travel", "period": "<same period as Step 1>", "type": "expense" }
 ```
 
 Present a summary table of trips by tag with totals. Note any large untagged transactions that couldn't be resolved.
