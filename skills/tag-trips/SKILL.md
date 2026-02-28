@@ -38,13 +38,7 @@ If `$ARGUMENTS` contains a time period, use that instead of `last_90d`.
 
 **Work in batches of ~100 transactions.** The first query returns the 100 largest Travel transactions. Discover trips, tag, and verify this batch before fetching the next page. Sorting by `-amount` means each batch is progressively less important — the biggest anchors come first, and later batches are smaller charges that cluster around already-discovered trips. If there are more results (`has_more: true`), use the `cursor` to fetch the next batch after finishing the current one.
 
-Then, for each existing tag that looks like a trip name (e.g. "Tokyo Mar 2026", "Hawaii Jan 2026"), fetch its tagged transactions:
-
-```json
-query { "detail": true, "tag": "Tokyo Mar 2026", "period": "all", "limit": 200 }
-```
-
-These tagged transactions define existing trips — their dates, destinations, and parties are the strongest signal for trip discovery.
+The tag list tells you which trips already exist. Tagged transactions in the current batch show you those trips' date ranges and destinations — no need to fetch them separately.
 
 ### 2. Discover trips
 
