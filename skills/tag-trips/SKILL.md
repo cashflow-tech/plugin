@@ -17,9 +17,9 @@ Use the **todo tools** (TaskCreate / TaskUpdate) to track progress. This state s
 
 During the clustering phase, create one task per candidate trip:
 - **Subject**: "Tag: Morocco Mar 2026 (5 txns, $34k)"
-- **Description**: tag name, destination, travel dates, **full transaction UUIDs**, key charges, and any notes about confidence or open questions
+- **Description**: tag name, destination, travel dates, **full transaction UUIDs**, key charges, **confirmation/booking numbers** (if found), and any notes about confidence or open questions
 
-Always store full UUIDs (not truncated prefixes) in task descriptions. This is critical — context compaction and session restarts destroy in-context IDs. With UUIDs in tasks, you can tag directly without re-querying.
+Always store full UUIDs (not truncated prefixes) and confirmation numbers in task descriptions. This is critical — context compaction and session restarts destroy in-context state. With UUIDs in tasks, you can tag directly without re-querying. Confirmation numbers let you re-find the email instantly if you need to revisit a booking.
 
 Also create a task for unresolved transactions that couldn't be matched to any trip.
 
@@ -83,7 +83,7 @@ When you can't tell which trip a transaction belongs to from the description alo
 2. Email search the **exact dollar amount** including cents (e.g. "$1,268.51") with a date range near the transaction date
 3. Email search the **party name** with a date range near the transaction date
 
-If a promising email result comes back, use a **subagent** (Task tool) to read the full message and extract just: travel dates, route/destination, passengers, amount. Confirmation emails are extremely verbose — never read them in the main context.
+If a promising email result comes back, use a **subagent** (Task tool) to read the full message and extract just: travel dates, route/destination, passengers, amount, and **confirmation/booking number**. Confirmation emails are extremely verbose — never read them in the main context.
 
 **Web searches** (if available) — for hotels, tours, unfamiliar parties:
 4. Web search the **cleaned/display name** (e.g. "Tock Inc")
