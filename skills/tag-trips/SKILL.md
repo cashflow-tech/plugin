@@ -13,7 +13,7 @@ Only the cashflow MCP tools are required. Every other data source (email, calend
 
 ## Scratchpad
 
-Maintain a scratchpad file (e.g. `/tmp/tag-trips-{timestamp}.md`) throughout the workflow. Write to it as you go and re-read it if context gets compacted. Track:
+Maintain a scratchpad file at `/tmp/tag-trips.md` throughout the workflow. Write to it as you go and re-read it if context gets compacted. Track:
 
 - **Discovered trips**: name, dates, destination, status (confirmed/pending)
 - **Resolved anchors**: which big charges have been looked up, what trip they map to
