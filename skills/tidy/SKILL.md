@@ -37,16 +37,16 @@ Use the period from `$ARGUMENTS` (e.g. "this month", "last 30 days"), or `last_9
 
 One rule covers many transactions now and in future imports — find clusters first.
 
-1. **Cluster via subagent.** Launch a subagent (Task tool) that:
-   - Fetches up to 1000 uncategorized transactions for the period (paginating with cursor)
-   - Scans for near-duplicate descriptions (same merchant, minor variations in location/date/amount suffixes)
-   - Groups into clusters with: pattern, count, total amount, sample raw descriptions
-   - Returns clusters to the main agent, sorted by count descending
+1. **Find clusters.** Use the built-in clusters query mode:
+   ```json
+   query { "clusters": true, "top": 25 }
+   ```
+   This returns party name clusters sorted by transaction count, with variants showing different spellings/truncations of the same entity. Focus on clusters where variants are clearly the same merchant (case differences, truncation, trailing punctuation) — skip clusters where variants are different businesses that happen to have similar names.
 
-2. **For each cluster:**
+2. **For each actionable cluster:**
    - Research unknown merchants (see above)
    - Propose a category and party name to the user
-   - Show: pattern, count, total amount, suggested category
+   - Show: canonical name, variant names, count, suggested category
    - If user approves: preview the rule (`admin { "entity": "rule", "action": "preview", ... }`), show match count, create if confirmed
    - If user skips: move on
 
