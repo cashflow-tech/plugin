@@ -32,6 +32,13 @@ If a promising email result comes back, use a **subagent** (Agent tool) to read 
 **Last resort:**
 7. **Ask the user** — show the transaction details and ask what it is
 
+## Re-runs
+
+This skill is designed to run repeatedly. On subsequent runs:
+- **Phase 1**: Only uncategorized transactions without rules are shown — prior runs' work is already applied.
+- **Phase 2**: Skip categories where all top parties already have rules (check with `admin { "entity": "rule", "action": "list" }` and compare party names). Focus on parties without rule coverage.
+- **Phase 3**: Skip clusters where a rule already covers the canonical name. Focus on new or unresolved clusters.
+
 ## Workflow
 
 Use the period from `$ARGUMENTS` (e.g. "this month", "last 30 days"), or `last_90d` as default.
@@ -57,18 +64,21 @@ Start with the highest-value uncategorized transactions — they have the most i
      ```json
      admin { "entity": "rule", "action": "preview", "conditions": { "description_pattern": "<pattern>" }, "actions": { "category_name": "<category>", "party_name": "<party>" } }
      ```
-     Show match count, then create if confirmed.
-   - For one-offs: annotate directly
+     Show match count, then create if confirmed. After creating rules, apply them retroactively:
      ```json
-     annotate { "action": "categorize", "filter": { "search": "<pattern>" }, "category_name": "<category>" }
-     annotate { "action": "set_party", "filter": { "search": "<pattern>" }, "party_name": "<party>" }
+     annotate { "action": "apply_rules", "rule_ids": ["<new-rule-id-1>", "<new-rule-id-2>"] }
+     ```
+   - For one-offs: annotate directly (use `start`/`end` to scope to the tidy period)
+     ```json
+     annotate { "action": "categorize", "filter": { "search": "<pattern>", "start": "<period-start>", "end": "<period-end>" }, "category_name": "<category>" }
+     annotate { "action": "set_party", "filter": { "search": "<pattern>", "start": "<period-start>", "end": "<period-end>" }, "party_name": "<party>" }
      ```
 
 ### Phase 2: Audit top expense categories
 
 Review the most populated expense categories for miscategorized or messy transactions.
 
-5. **Fetch top 10 expense categories by transaction count:**
+5. **Fetch top 10 expense categories by amount:**
    ```json
    query { "by": ["category"], "type": "expense", "period": "<period>", "top": 10 }
    ```
@@ -112,7 +122,10 @@ Use the built-in cluster detection to consolidate duplicate merchant names.
     ```json
     admin { "entity": "rule", "action": "preview", "conditions": { "description_pattern": "<pattern>" }, "actions": { "category_name": "<category>", "party_name": "<canonical_name>" } }
     ```
-    Show match count, then create if confirmed.
+    Show match count, then create if confirmed. After creating rules, apply them retroactively:
+    ```json
+    annotate { "action": "apply_rules", "rule_ids": ["<new-rule-id-1>", "<new-rule-id-2>"] }
+    ```
 
 ### Wrap up
 
