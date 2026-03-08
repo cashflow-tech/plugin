@@ -40,9 +40,9 @@ Use the period from `$ARGUMENTS` (e.g. "this month", "last 30 days"), or `last_9
 
 Start with the highest-value uncategorized transactions — they have the most impact on accuracy.
 
-1. **Fetch top 10 uncategorized by amount:**
+1. **Fetch top 10 uncategorized expenses by amount:**
    ```json
-   query { "detail": true, "is_uncategorized": true, "period": "<period>", "limit": 10, "sort": "-amount" }
+   query { "detail": true, "is_uncategorized": true, "type": "expense", "period": "<period>", "limit": 10, "sort": "-amount" }
    ```
 
 2. **Research each transaction** using the merchant research steps above. For each, determine:
