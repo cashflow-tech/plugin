@@ -23,16 +23,22 @@ Three tools connected to [cashflow.tech](https://cashflow.tech) via OAuth:
 
 | Tool | Purpose |
 |------|---------|
-| **query** | Spending summaries, time series, recurring bills, transaction detail, income statements |
+| **query** | Spending summaries, time series, recurring bills, transaction detail, forecasts, anomalies, income statements, health checks |
 | **annotate** | Categorize transactions, set parties, tag, mark transfers, detect recurring |
-| **admin** | Manage categories, rules, accounts, parties, tags |
+| **admin** | Manage categories, rules, accounts, parties, tags, bank sync |
 
 ### Skills
 
-| Skill | Trigger |
-|-------|---------|
-| **recap** | "monthly recap", "how did I do this month", "spending summary" |
+| Skill | Trigger phrases |
+|-------|-----------------|
+| **recap** | "monthly recap", "how did I do this month", "spending summary", "quarterly review" |
 | **tidy** | "tidy up", "categorize uncategorized", "clean up transactions" |
+| **tag-trips** | "tag travel", "organize trips", "trip tagging" |
+| **burn** | "burn rate", "runway", "how long will my money last" |
+| **fishy** | "anything fishy", "suspicious charges", "audit my spending" |
+| **optimize-cards** | "optimize credit cards", "card rewards", "which card should I use" |
+| **optimize-subs** | "audit subscriptions", "optimize subscriptions", "cancel subscriptions" |
+| **setup** | First-time onboarding and account setup |
 
 ## How it works
 
@@ -47,8 +53,13 @@ Three tools connected to [cashflow.tech](https://cashflow.tech) via OAuth:
 - "What are my recurring bills?"
 - "Tidy up my uncategorized transactions"
 - "Show me my spending by category for the last 3 months"
+- "Is there anything fishy in my transactions?"
+- "Audit my subscriptions — what am I paying for?"
+- "What's my burn rate?"
+- "Tag my recent travel expenses"
 
 ## Links
 
 - [cashflow.tech](https://cashflow.tech)
+- [Documentation](https://cashflow.tech/docs)
 - [Server discovery](https://cashflow.tech/.well-known/mcp.json)
