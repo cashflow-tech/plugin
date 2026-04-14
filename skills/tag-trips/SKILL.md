@@ -1,6 +1,6 @@
 ---
 name: tag-trips
-description: Triggered by "tag travel", "tag trips", "travel expenses", "organize trips", "trip tagging", "which trip was this"
+description: Cluster travel transactions into trips using date/location signals and email confirmations, then tag them in bulk. Triggered by "tag travel", "tag trips", "travel expenses", "organize trips", "trip tagging", "which trip was this". Use this skill whenever the user wants to organize travel spending by trip, figure out which trip a charge belongs to, or get a breakdown of trip costs.
 ---
 
 # Tag Trips
@@ -83,7 +83,7 @@ When you can't tell which trip a transaction belongs to from the description alo
 2. Email search the **exact dollar amount** including cents (e.g. "$1,268.51") with a date range near the transaction date
 3. Email search the **party name** with a date range near the transaction date
 
-If a promising email result comes back, use a **subagent** (Task tool) to read the full message and extract just: travel dates, route/destination, passengers, amount, and **confirmation/booking number**. Confirmation emails are extremely verbose — never read them in the main context.
+If a promising email result comes back, use a **subagent** (Agent tool) to read the full message and extract just: travel dates, route/destination, passengers, amount, and **confirmation/booking number**. Confirmation emails are extremely verbose — never read them in the main context.
 
 **Web searches** (if available) — for hotels, tours, unfamiliar parties:
 4. Web search the **cleaned/display name** (e.g. "Tock Inc")

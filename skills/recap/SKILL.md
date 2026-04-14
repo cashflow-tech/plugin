@@ -1,11 +1,19 @@
 ---
 name: recap
-description: Triggered by "monthly recap", "how did I do this month", "spending summary", "financial review", "weekly recap", "quarterly review", "year in review"
+description: Generate a narrative financial review comparing spending, income, trends, and anomalies across any time period. Triggered by "monthly recap", "how did I do this month", "spending summary", "financial review", "weekly recap", "quarterly review", "year in review". Use this skill whenever the user asks about how they did financially over a period, wants a spending summary, or asks for a financial review — even casually like "how'd this month go?"
 ---
 
 # Financial Recap
 
 Generate a narrative financial review for any time period.
+
+## Why this matters
+
+A financial recap turns raw transaction data into a story — it answers "what happened with my money?" in plain language. The comparison to prior period and same-period-last-year catches both sudden changes and seasonal patterns that raw numbers miss.
+
+## Arguments
+
+`$ARGUMENTS` specifies the time period. Examples: "this month", "january", "Q1 2026", "last week", "2025". Defaults to the current month if no argument is given.
 
 ## Workflow
 
@@ -42,4 +50,4 @@ Generate a narrative financial review for any time period.
    - **Key ratios**: any ratios returned in the summary (e.g. expense-to-income)
    - **Account balances**: current balances and changes
 
-6. **Tone**: Stick to the facts. Report what happened without judgement — no "great job" or "you need to cut back." Just clear, plain-language observations. Skip categories with trivial amounts.
+6. **Tone**: Stick to the facts. Report what happened without judgement — no "great job" or "you need to cut back." Just clear, plain-language observations. Skip categories with trivial amounts. Lead with the headline numbers, then the deltas, then the details. A recap should be scannable — use tables for numbers, prose for narrative context.

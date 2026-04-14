@@ -1,11 +1,15 @@
 ---
 name: tidy
-description: Triggered by "tidy up", "clean up transactions", "categorize uncategorized", "organize my transactions"
+description: Incrementally categorize uncategorized transactions, fix miscategorized items, consolidate duplicate merchant names, and create rules for recurring merchants. Triggered by "tidy up", "clean up transactions", "categorize uncategorized", "organize my transactions", "fix categories", "clean up merchants". Use this skill whenever the user wants to improve their transaction data quality — even if they just say something like "my transactions are messy" or "lots of uncategorized stuff."
 ---
 
 # Tidy Up Transactions
 
 Incrementally clean up uncategorized and miscategorized transactions. Designed to run many times — each run makes a small dent (~10 items per phase).
+
+## Why this matters
+
+Uncategorized and miscategorized transactions make every other skill less accurate — recaps miss spending, burn rates are wrong, and card optimization can't see the real category breakdown. Tidying is foundational work that pays dividends everywhere.
 
 ## Prerequisites
 
@@ -137,6 +141,10 @@ Use the built-in cluster detection to consolidate duplicate merchant names.
     ```
     Report the remaining uncategorized count from the response metadata. If there's more to do, suggest running `/tidy` again.
 
+## Arguments
+
+`$ARGUMENTS` specifies the time period to tidy. Examples: "this month", "last 30 days", "last_90d". Defaults to `last_90d` if no argument is given.
+
 ## Tone
 
-Stick to the facts. Present findings and suggestions without judgement — no commentary on spending habits. Just clear, plain-language observations and actionable options.
+Stick to the facts. Present findings and suggestions without judgement — no commentary on spending habits. Just clear, plain-language observations and actionable options. Batch findings into tables for review — don't narrate each transaction individually.
