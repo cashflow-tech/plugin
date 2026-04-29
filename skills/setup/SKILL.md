@@ -13,13 +13,14 @@ Raw bank data is messy. Money the user moved between their own accounts can look
 
 ## Step 1: Pull everything in parallel
 
-Issue all six in a **single tool-use turn (parallel calls)**:
+Issue all seven in a **single tool-use turn (parallel calls)**:
 
 - `query { "health": true }`
 - `query { "include": ["accounts"], "period": "last_90d" }`
 - `query { "flows": true }`
 - `query { "recurring": true }`
 - `query { "by": ["group"], "type": "expense", "period": "last_90d", "top": 15 }`
+- `query { "by": ["group"], "granularity": "monthly", "periods": 1, "type": "budget", "nest": { "by": "party", "top": 5 } }` — current-month P&L with the top 5 parties expanded inside each group, so you can see what's actually driving each bucket without a follow-up call.
 - `admin { "entity": "rule", "action": "list" }`
 
 If existing rules already cover the obvious gaps, focus the rest of the pass on what's still rough.
@@ -48,6 +49,7 @@ Cover the regular money in and out:
 
 - Anything that looks like a paycheck — name the employer and the rough amount, then check the framing fits ("looks like a Trucker Huss paycheck twice a month — is that the right way to think about it?"). If the money coming in is irregular (one-off deposits, transfers in, advances), say so without trying to call it a paycheck.
 - Anything that looks like rent or mortgage — the biggest regular Housing charge, or a large regular outflow that looks housing-shaped but isn't categorized. Flag it if Housing is empty.
+- **Cash advances, BNPL, and short-term loans** (Brigit, Cleo, Dave, Klover, FloatMe, MoneyLion, Earnin, MyPay, Klarna, Affirm, Afterpay, Spotloan, etc.) — if you see *any* activity here, name it. These flows often distort the bigger picture: an advance reads as income but isn't really earned money, and the repayment reads as expense but isn't really spending. Show how much is cycling in vs out per month. If a single user has multiple cash-advance services running, that's worth saying plainly — not as judgement, but as a fact about cash flow shape.
 - Big or notable regular bills (insurance, utilities, child support, loan payments) only if there's something worth saying — a recent price jump, something new, something unusually high. Don't list every bill; that's what `/burnrate` is for.
 
 ### Section 3 — Worth a closer look
