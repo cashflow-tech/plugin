@@ -63,6 +63,6 @@ Most "fishy" transactions have innocent explanations — a merchant using a diff
 
 8. **For each flagged item**, show: date, amount, description, party, category, and a specific reason it was flagged. Be concrete — "2x your usual Uber amount" is better than "unusually large."
 
-## Tone
+## Fishy-specific tone
 
-Stay calm and factual. Most flagged items turn out to be legitimate — present them as "worth checking" rather than "problems." Don't cause alarm over a $5 discrepancy. If nothing looks off, say so plainly. The user wants reassurance as much as they want detection.
+Stay calm. Most flagged items turn out to be legitimate — present them as "worth checking" rather than "problems." Don't cause alarm over a $5 discrepancy. If nothing looks off, say so plainly. The user wants reassurance as much as detection. (General voice guidance lives in the system prompt.)

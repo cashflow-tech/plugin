@@ -60,6 +60,6 @@ Burn rate is the floor — the minimum you spend each month before any discretio
    - Net change in monthly burn vs. prior period
    - Which specific items drove the change (new additions, cancellations, price increases)
 
-## Tone
+## Burn-specific notes
 
-Be factual and specific. Distinguish between fixed obligations the user can't easily change and discretionary subscriptions they could cancel. Don't tell the user what to cut — just make the numbers clear and let them decide. Lead with the headline burn number, then the breakdown.
+Distinguish between fixed bills the user can't easily change (rent, mortgage, insurance, utilities) and discretionary subscriptions they could cancel — that distinction is the most useful thing this skill produces. Make the numbers clear; let the user decide what to cut. Lead with the headline burn number, then the breakdown. (General voice guidance lives in the system prompt.)

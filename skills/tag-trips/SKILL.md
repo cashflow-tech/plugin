@@ -139,6 +139,4 @@ Ask: "Want me to look for dining, rideshare, or other expenses during your trip 
 - **Conservative on non-travel**: Don't auto-tag dining/rideshare. Offer as follow-up in Step 6.
 - **Multi-account by default**: Don't filter by account — households travel together. But note that email confirmations may only be in one person's inbox.
 
-## Tone
-
-Stick to the facts. Present findings and suggestions without judgement — just clear, plain-language observations and actionable options.
+<!-- Voice guidance lives in the system prompt. No skill-specific tone notes needed. -->
