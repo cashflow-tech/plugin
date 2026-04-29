@@ -1,6 +1,6 @@
 ---
-name: burn
-description: Calculate total recurring financial obligations, break them down by category, and flag changes. Triggered by "monthly burn", "recurring bills", "subscriptions", "what do I pay for", "fixed costs", "how much are my bills", "monthly obligations", "what are my recurring charges". Use this skill whenever the user asks about their recurring spending, fixed costs, or wants to understand their baseline monthly obligations.
+name: burnrate
+description: Calculate total recurring financial obligations, break them down by category, and flag changes. Triggered by "burn rate", "monthly burn", "recurring bills", "subscriptions", "what do I pay for", "fixed costs", "how much are my bills", "monthly obligations", "what are my recurring charges". Use this skill whenever the user asks about their recurring spending, fixed costs, or wants to understand their baseline monthly obligations.
 ---
 
 # Monthly Burn Rate
