@@ -48,7 +48,7 @@ Cover the regular money in and out:
 
 - Anything that looks like a paycheck — name the employer and the rough amount, then check the framing fits ("looks like a Trucker Huss paycheck twice a month — is that the right way to think about it?"). If the money coming in is irregular (one-off deposits, transfers in, advances), say so without trying to call it a paycheck.
 - Anything that looks like rent or mortgage — the biggest regular Housing charge, or a large regular outflow that looks housing-shaped but isn't categorized. Flag it if Housing is empty.
-- Big or notable regular bills (insurance, utilities, child support, loan payments) only if there's something worth saying — a recent price jump, something new, something unusually high. Don't list every bill; that's what `/burn` is for.
+- Big or notable regular bills (insurance, utilities, child support, loan payments) only if there's something worth saying — a recent price jump, something new, something unusually high. Don't list every bill; that's what `/burnrate` is for.
 
 ### Section 3 — Worth a closer look
 
@@ -73,7 +73,7 @@ Cover what needs the user's eyes. Pick the 2–4 most important items; don't bur
 
 ### Closing
 
-End with an open question. Something like: *"Where would you like to start? I can [the one or two most useful things you raised], or you can poke around — `/recap` for a monthly summary, `/burn` for the regular bills picture, `/tidy` to clean up unsorted transactions."*
+End with an open question. Something like: *"Where would you like to start? I can [the one or two most useful things you raised], or you can poke around — `/recap` for a monthly summary, `/burnrate` for the regular bills picture, `/tidy` to clean up unsorted transactions."*
 
 If the user replies "go", "yes", "apply", or names a specific part, move on to Step 3.
 
