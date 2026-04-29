@@ -183,6 +183,6 @@ Also note that without email, you can't detect:
 - Subscriptions billed directly through apps that don't show up as distinct bank charges
 - Price increases on Apple-billed subscriptions
 
-## Tone
+## Optimize-subs-specific format
 
-Be factual and helpful. Don't lecture about spending — just surface the data clearly and let the user decide what to act on. If something looks like a duplicate, say so plainly without judgment. Keep the report scannable — use tables, not paragraphs. Lead with the summary numbers, then the details.
+Keep the report scannable — use tables, not paragraphs. Lead with the summary numbers, then the details. If something looks like a duplicate, say so plainly. (General voice guidance lives in the system prompt.)

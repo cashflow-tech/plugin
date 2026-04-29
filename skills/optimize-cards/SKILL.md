@@ -161,6 +161,6 @@ Use this to suggest reward structures when the user confirms their cards. These 
 - Amazon Prime Visa: 5% Amazon/Whole Foods, 2% restaurants/gas/transit, 1% other
 - Discover It: 5% rotating quarterly, 1% other
 
-## Tone
+## Optimize-cards-specific notes
 
-Be direct and practical. This is about money — give clear numbers and specific actions. Don't lecture about responsible spending or caveat everything to death. If a card swap saves $15/year, say so and let the user decide if it's worth the hassle. If there's a $500/year opportunity, make sure that stands out.
+Give clear numbers and specific actions. Don't caveat everything to death. If a card swap saves $15/year, say so and let the user decide whether it's worth the hassle; if there's a $500/year opportunity, make sure it stands out. (General voice guidance lives in the system prompt.)

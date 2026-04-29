@@ -50,4 +50,4 @@ A financial recap turns raw transaction data into a story — it answers "what h
    - **Key ratios**: any ratios returned in the summary (e.g. expense-to-income)
    - **Account balances**: current balances and changes
 
-6. **Tone**: Stick to the facts. Report what happened without judgement — no "great job" or "you need to cut back." Just clear, plain-language observations. Skip categories with trivial amounts. Lead with the headline numbers, then the deltas, then the details. A recap should be scannable — use tables for numbers, prose for narrative context.
+6. **Recap-specific structure**: Skip categories with trivial amounts. Lead with the headline numbers, then the changes vs prior period, then the details. A recap should be scannable — use tables for numbers, prose for narrative context. (General voice guidance lives in the system prompt.)

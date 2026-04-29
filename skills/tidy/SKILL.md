@@ -145,6 +145,6 @@ Use the built-in cluster detection to consolidate duplicate merchant names.
 
 `$ARGUMENTS` specifies the time period to tidy. Examples: "this month", "last 30 days", "last_90d". Defaults to `last_90d` if no argument is given.
 
-## Tone
+## Tidy-specific format
 
-Stick to the facts. Present findings and suggestions without judgement — no commentary on spending habits. Just clear, plain-language observations and actionable options. Batch findings into tables for review — don't narrate each transaction individually.
+Batch findings into tables for review — don't narrate each transaction individually. (General voice guidance lives in the system prompt.)

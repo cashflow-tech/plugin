@@ -1,19 +1,19 @@
 ---
 name: setup
-description: One-time onboarding after connecting bank accounts. Detects household archetype, drafts transfer rules, identifies paycheck and rent/mortgage, flags unconnected accounts. Read-only first — applies changes only when the user confirms. Triggered by "set up my accounts", "just connected my bank", "first time setup", "onboarding", "get started", "configure cashflow", "now what", or by the system immediately after a successful Plaid link.
+description: One-time onboarding after connecting bank accounts. Pulls a wide read in parallel, surfaces what stands out, and asks the user what to do next. Read-only on first turn — applies changes only when the user confirms. Triggered by "set up my accounts", "just connected my bank", "first time setup", "onboarding", "get started", "configure cashflow", "now what", or by the system immediately after a successful Plaid link.
 ---
 
 # First-Time Setup
 
-Map a freshly-connected user's financial topology and propose a small batch of fixes. Designed to run once after Plaid link. **Read-only on the first turn** — apply changes only when the user explicitly confirms.
+Look at a user's freshly-connected accounts and tell them what you see. Run once after Plaid link. **Read-only on the first turn** — change nothing until the user says go.
 
 ## Why this matters
 
-Raw bank data is messy. Transfers between a user's own accounts show up as expenses if not marked. Paychecks hide in generic descriptions. The same person appears under different names. This skill turns raw data into a clean, labeled financial picture.
+Raw bank data is messy. Money the user moved between their own accounts can look like spending. Paychecks hide behind generic descriptions. The same store shows up under three different names. The job is to make the picture cleaner — but the user knows their own money better than you do, so the first pass is just looking, not fixing.
 
 ## Step 1: Pull everything in parallel
 
-Issue all six of these queries in a **single tool-use turn (parallel calls)**. Do not run them one at a time.
+Issue all six in a **single tool-use turn (parallel calls)**:
 
 - `query { "health": true }`
 - `query { "include": ["accounts"], "period": "last_90d" }`
@@ -22,66 +22,75 @@ Issue all six of these queries in a **single tool-use turn (parallel calls)**. D
 - `query { "by": ["group"], "type": "expense", "period": "last_90d", "top": 15 }`
 - `admin { "entity": "rule", "action": "list" }`
 
-If existing rules already cover transfers, paychecks, or housing, treat those as done and focus only on gaps.
+If existing rules already cover the obvious gaps, focus the rest of the pass on what's still rough.
 
-## Step 2: Infer and report (one message)
+## Step 2: Reflect back what you see (one message)
 
-From the data above, in **one message** back to the user, present:
+Write a single message organized as three short sections, in this order:
 
-### Archetype
+1. **Accounts**
+2. **Recurring**
+3. **Worth a closer look**
 
-Pick one from the flow topology:
+Use these as section headings (`## Accounts`, etc.). Within each section, write flowing prose — paragraphs, not bulleted findings, no bolded inline labels. Aim for ~200–400 words total. Skip a section entirely if it has nothing worth saying. Each section should read like an observation, not a verdict.
 
-- **Family household** — transfers between accounts with different surnames; multiple checking accounts named for different people; small recurring inflows to kid-named accounts.
-- **Envelope budgeter** — one person, 5+ accounts at the same institution; round-number transfers from a hub account to spokes; star topology in flows.
-- **Individual / simple** — 1–3 accounts (checking, savings, credit card); functional transfers only.
-- **Couple, pooled finances** — two people on accounts but money pools into shared accounts; few inter-person transfers.
+### Section 1 — Accounts
 
-State the inference and the signals you used. Don't ask for confirmation — if it's wrong, the user will correct it.
+Cover, in plain prose:
 
-### Money flow diagram
+- How many accounts are connected, at which banks, which look active and which sit at zero. Names that are unclear ("CREDIT CARD", raw bank codes) are worth asking about — *what* is this account, not guessing what it is. Don't pester about names that are already clear ("Family Checking", "Joint Savings").
+- Where money comes in and how it spreads out — does it land in one account and move to others, are there regular transfers between two specific accounts, etc.
+- Banks or cards mentioned in your transfers, bill payments, or recurring charges that aren't connected here (Apple Card, Capital One, Fidelity, Schwab, Robinhood, the mortgage company, the student loan servicer). Mention as something they might want to add, not as a problem.
 
-ASCII diagram of the topology. This is the most valuable thing you produce — it shows the user their plumbing at a glance.
+### Section 2 — Recurring
 
-```
-Paycheck (ACME) → Adam checking → Mary checking → Bill Pay → kid accounts
-                               → Savings
-                               → Visa payment
-```
+Cover the regular money in and out:
 
-### Recommendations (do not apply yet)
+- Anything that looks like a paycheck — name the employer and the rough amount, then check the framing fits ("looks like a Trucker Huss paycheck twice a month — is that the right way to think about it?"). If the money coming in is irregular (one-off deposits, transfers in, advances), say so without trying to call it a paycheck.
+- Anything that looks like rent or mortgage — the biggest regular Housing charge, or a large regular outflow that looks housing-shaped but isn't categorized. Flag it if Housing is empty.
+- Big or notable regular bills (insurance, utilities, child support, loan payments) only if there's something worth saying — a recent price jump, something new, something unusually high. Don't list every bill; that's what `/burn` is for.
 
-Present as a numbered list. Describe each in prose, with the pattern and approximate match count from the flows/recurring data already in hand. **Do not call `admin rule preview` per rule** — that comes in Step 3.
+### Section 3 — Worth a closer look
 
-1. **Account renames** — list any accounts with generic bank names (e.g. "EVERYDAY CHECKING ...2226"). Suggest a name based on archetype:
-   - Household: by person ("Adam", "Mary", "Bill Pay", "Sophia")
-   - Envelope: by purpose ("Bills", "Groceries", "Fun Money")
-   - Individual/Couple: by type ("Main Checking", "Savings", "Visa")
-2. **Transfer rules** — see *Transfer rule patterns* below. e.g. "Add a rule for `TRANSFER FROM POWELL` → 'Transfer from Mary'. Would match ~14 transactions in last 90d."
-3. **Paycheck** — largest, most regular income from `recurring`. Skip for retirees (look for pension/Social Security) and students (irregular income). State the inferred employer and amount.
-4. **Rent/mortgage** — top recurring in the Housing group. If Housing is empty but a large recurring expense looks housing-shaped, flag it.
-5. **Unconnected accounts** — institutions referenced in transfers/recurring that aren't connected (Schwab, Fidelity, Vanguard, Ameritrade, mortgage servicers, student loan servicers, unfamiliar credit cards).
+Cover what needs the user's eyes. Pick the 2–4 most important items; don't bury them in twelve.
 
-Skip any branch with no signal. Empty `flows` → no transfer rules. Empty `recurring.income` → no paycheck section. Don't generate zero-match recommendations.
+- **Rules worth adding.** Rules can mark transfers, set a category, give one name to a merchant that shows up under several (e.g. consolidating `AMZN MKTP US*1A2B3` and `AMAZON.COM*ABC` as "Amazon"), tag, or ignore. Roughly in this priority:
+  - Money moving between the user's own accounts that isn't yet marked as a transfer (this throws everything else off)
+  - One real merchant showing up under several different descriptions
+  - A merchant the user buys from often where the transactions aren't sorted into a category yet (10+ in 90 days)
+  - Obvious noise worth ignoring (micro-charges, placeholder rows)
+- **Things that haven't been sorted yet** — large totals, the biggest single source of unsorted transactions.
+- **Oddities** — anything from the health check that needs a human read: deposits that look like income but might not be, unusually large transactions, a recurring charge that suddenly jumped in price. Phrase as questions: "There's a $5K transfer from \<name\> on April 9 — was that a one-off?"
 
-### Closing prompt
+### Setup-specific tone notes
 
-End with: *"Cashflow is set up and ready. You can apply the rules I drafted (reply 'go'), or jump straight in: try `/tidy` to clean up uncategorized transactions, `/recap` for a monthly summary, or `/burn` to see your recurring obligations."*
+(General voice guidance — plain English, no jargon, no archetypes, hedge guesses — lives in the system prompt.)
+
+- The three section headings (above) are the only structural signposts. No bolded inline labels inside sections — write prose.
+- No money-flow diagrams unless the structure is genuinely complex (5+ interlinked accounts) AND a diagram makes it clearer than words would. Default: skip.
+- Don't suggest rules for things Plaid usually gets right (the standard credit-card payment, the standard checking-to-savings transfer, well-known stores already in the right category).
+- Don't restate dollar amounts the user can already see in the recurring list.
+
+### Closing
+
+End with an open question. Something like: *"Where would you like to start? I can [the one or two most useful things you raised], or you can poke around — `/recap` for a monthly summary, `/burn` for the regular bills picture, `/tidy` to clean up unsorted transactions."*
+
+If the user replies "go", "yes", "apply", or names a specific part, move on to Step 3.
 
 ## Step 3: Apply (only when the user confirms)
 
-On confirmation ("go", "yes", "apply", or a subset like "rules only"):
+For whatever subset they confirmed:
 
 1. Issue all `admin rule preview` calls in a **single parallel batch**. Show the previews together.
 2. If match counts look sane, call `admin rule create` for the batch in **one parallel turn**.
 3. Run `annotate { "action": "apply_rules", "rule_ids": [...] }` once with all new rule IDs.
 4. Issue all `admin account rename` calls in a **single parallel batch**.
 
-Never preview-then-create one rule at a time.
+Never preview-then-create one at a time. If a preview returns a count that's wildly different from what you described in Step 2, stop and tell the user before creating anything.
 
 ## Transfer rule patterns
 
-### Family household
+### Multi-person household
 
 Two layers:
 
@@ -103,27 +112,25 @@ Both directions for each person — typically 4 rules for a two-person household
 
 Use `from_acct_id` / `to_acct_id` from the flows query.
 
-### Envelope budgeter
+### Hub-and-spoke (envelope-style)
 
-Identify the hub (most outgoing transfers in flows). Label transfers by envelope purpose.
+Identify the hub (most outgoing transfers in flows). Label transfers by purpose.
 
 - Spoke side: rule with `account_id` pinned to the envelope, party "Fund from Hub".
 - Hub side: rule with `account_id` pinned to the hub, party "Fund \<Envelope\>".
 
 Patterns vary by bank — read actual descriptions from the flows data.
 
-### Individual
+### Simple (1–3 accounts)
 
-Often minimal. Plaid usually handles checking → savings and credit card payments correctly. Only propose rules where flows shows misclassified transfers.
+Often nothing to do. Plaid usually handles checking → savings and credit card payments correctly. Only propose rules where flows shows misclassified transfers.
 
-### Hygiene (all archetypes)
+### Hygiene
 
-- Always set `set_is_transfer: true` AND `set_category_name: "Other Transfer"`. Without a category, the transaction shows as uncategorized.
+- **Transfer rules** must set both `set_is_transfer: true` AND `set_category_name: "Other Transfer"`. Without a category the transaction reads as uncategorized after the rule fires.
+- **Party-consolidation rules** (different descriptions → one party) usually want `set_party_name` only, no category change. Let the existing category stand unless it's clearly wrong.
+- **Category rules** with no party change are fine; just `description_pattern` + `set_category_name`.
 
 ## Re-running
 
-If rules, account names, and transfer labels already look clean, say so and stop. Don't redo finished work.
-
-## Tone
-
-Welcoming but compact. Don't over-explain. The archetype, the diagram, and the recommendation list are the product — everything else is scaffolding. If something already looks clean, skip it without ceremony.
+If rules, account names, and transfer labels already look clean, say so in one or two sentences and stop. Don't manufacture work.
