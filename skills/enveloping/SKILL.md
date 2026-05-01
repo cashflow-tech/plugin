@@ -37,6 +37,16 @@ Issue all five in one tool-use turn:
 - `query { "flows": true, "period": "last_90d" }` — inter-account transfer matrix
 - `query { "by": ["group"], "type": "expense", "period": "last_90d" }` — sanity-check what's actually flowing through fixed-cost categories
 
+### Step 1.5: Triage — is this an enveloping question right now?
+
+Before computing a sweep, scan the data for signals that enveloping isn't the right intervention yet. When any of these hold, **pivot, don't compute** — name the specific reason and what conversation to have instead.
+
+- **Overdrawn or perpetually near-zero account.** Any checking account currently below zero, or repeatedly bumping zero across the period. Sweeping money into a "bill pay" account from a hub that's already negative just relocates the overdraft.
+- **Recurring expense ≥ take-home.** When the obligations you'll identify in Step 2 add up to more than monthly take-home, no sweep number works — the math is broken before envelopes enter the picture. Surface the gap, name the largest offending recurring lines, and stop.
+- **EWA / payday-loan churn.** Three or more of {Earnin, Albert, Brigit, Dave, Cleo, Bright Money, Klover, Grid, Advance America, Tilt, MoneyLion, ActiveHours, Empower, Possible Finance, Oasiscre, Atlas, Current advances} appearing in `flows` over 90d. The user is borrowing against their next paycheck multiple ways; the fix is exiting that cycle, not separating bills from spending money. Often pairs with high-interest installment lines (Affirm, Klarna, Uplift, GreenSky) draining the same account — count those toward the same signal.
+
+When you pivot, be plain: "Before envelopes make sense, the thing eating the cushion is X." Don't soften it into a lecture, and don't refuse to engage — just be honest that sweep math doesn't help here and offer the conversation that does.
+
 ### Step 2: Compute the numbers
 
 **Monthly non-discretionary spend** — sum recurring obligations the user can't easily cancel:
@@ -58,7 +68,11 @@ Note: many users already pay streaming/subs out of their bill-pay account becaus
 
 Convert frequencies to monthly: weekly × 4.33, biweekly × 2.17, monthly direct, annual / 12.
 
+**Negative line items are a data flag, not a windfall.** If the `by group` query shows a category total below zero, it's net of refunds, returns, or a Plaid sign mismatch — there's an anomaly worth investigating, not a category that "earned money this period." Don't subtract it from the sweep computation. Mention it once so the user can correct the data, then exclude it from the math.
+
 **Monthly take-home income** — read directly from the `paychecks` response: `totals.monthly_avg` is the sum of regular paycheck streams. If `irregular_income_90d` is non-zero, the user has variable comp (1099, freelance, bonuses) — say so plainly and treat the recurring number as a floor, not the whole picture.
+
+**When `monthly_avg` is zero but `irregular_income_90d` is non-zero**, the recurring detector didn't catch the user's actual income. Common patterns: 1099 / freelance with varying amounts, native-corp or pension dividends, cash or check deposits, and gig platforms (DoorDash, Uber) paying out at variable cadences. Don't fabricate a sweep number against unknown income — instead, surface what you see (`"~$X/mo of inflow over 90d that isn't categorized as a paycheck"`) and ask the user to confirm before running the math. The same applies when `monthly_avg` is suspiciously small (a $0.07 "Interest Earned" stream is not a paycheck).
 
 **Paycheck cadence** — already labeled on each paycheck (`weekly`, `biweekly`, `semimonthly`, `monthly`, `quarterly`, `semiannual`, `annual`). Convert to paychecks-per-month for the sweep math:
 - weekly → 4.33
@@ -100,6 +114,10 @@ Lead with the headline number. Two shapes depending on what you found:
 > [If sweep is too low: name the gap, suggest a new amount.]
 > [If sweep looks high but the hub balance is still flat: non-recurring stuff (variable bills, anomalies) is consuming the apparent surplus — the system is matching real outflow even if recurring sums don't show it. Reconcile against the actual current balance before recommending a change.]
 > [If amount is right: say so plainly. Don't manufacture work.]
+
+**Fixed-income or very-low-income (single SSI/SSA stream, take-home under ~$2k/mo):**
+
+Skip the percentage-of-take-home framing entirely — Ramit's 50/30/20 (or any similar split) doesn't apply when there isn't slack to allocate. Tier 1 mechanics (separating the bill draft from the spending account) are still useful as a discipline if the user wants the structure, but the more useful conversation first is what's quietly draining the cushion: typically credit-card interest, EWA fees, or a recurring line the user has stopped seeing. Surface that line by name, give the actual dollar impact, and let the user decide whether to engage. Only return to envelope mechanics if they ask.
 
 A common mistake here is to recommend cutting the sweep based on `inflow − recurring_outflow > 0`, when in fact non-recurring charges (anomalies, variable utility bills, occasional larger insurance hits) are eating that surplus. The actual hub balance is the truth — if it's not accumulating despite the recurring math saying it should, the recurring view is incomplete.
 
