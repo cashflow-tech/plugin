@@ -1,0 +1,23 @@
+{
+  "skill_name": "leaks",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "where is my money leaking? give me the full picture across all the sneaky ways money exits — subscriptions, fees, interest, anything weird. last 12 months.",
+      "expected_output": "Comprehensive leak audit. Headline annualized total. Sections covering subscriptions, fees, interest, predatory products, gambling (if any), unintended leaks. Empty categories omitted. Hemingway voice, no moralizing, dollar costs as the unit.",
+      "files": []
+    },
+    {
+      "id": 2,
+      "prompt": "audit my subscriptions. how much am i paying for things i'm not using?",
+      "expected_output": "Subscription-focused report (the $ARGUMENTS narrowing). Total monthly + annualized. Active series sorted by cost. Zombie series flagged. Price-creep. Small-amount cluster (likely-forgotten). Bundled-billing parties (Apple/Google) noted with where to look.",
+      "files": []
+    },
+    {
+      "id": 3,
+      "prompt": "anything fishy in my account in the last 30 days? something feels off but i can't put my finger on it",
+      "expected_output": "Short-period recent-anomaly focus. Surfaces possible duplicates, unusually-large charges, new-merchant large charges, recurring price changes. Calm tone, frames findings as 'worth a second look' not 'fraud.' Covers the old /fishy use case.",
+      "files": []
+    }
+  ]
+}
