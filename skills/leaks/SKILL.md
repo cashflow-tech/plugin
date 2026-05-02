@@ -43,15 +43,25 @@ The report has eight sections. Run them in order. Each is independent — if a s
 { "recurring": true, "type": "expense" }
 ```
 
-Returns active recurring expense series. From the response:
+Returns *all* active recurring expense series — including rent, utilities, insurance, car payments, gym, and bills the user is well aware of. **Most of that isn't a leak.** The user knows they pay rent. They don't know they're still paying $14.99/mo for a tennis-stats app they signed up for two years ago.
 
-- **Total monthly cost** and **annualized** (×12) — lead with this number
-- **Active series**, sorted by monthly cost descending
-- **Inactive but recently charged** — items marked inactive that have a charge in the last 30 days. These are the "I thought I cancelled" subs. (If the last-charge date is more than 30 days old, the series was genuinely cancelled — don't flag it.)
-- **Price-creep flags** — series where the latest charge differs noticeably from the historical average. Cashflow's recurring detection tracks variance; price changes are visible in the response.
-- **Small-amount cluster** — recurring charges under $10/month. Often forgotten free trials that converted; flag them as a group.
+The audit is about the *forgotten* recurring spend — services the user wouldn't immediately list if you asked them what they pay every month. Don't headline the gross recurring total. Lead with the forgotten/zombie/price-creep set instead, and treat the rest as context.
+
+From the response, surface (in order):
+
+- **Forgotten/zombie subscriptions — the actual leak.** Services the user has likely lost track of. Heuristics:
+  - Inactive series with a charge in the last 30 days ("I thought I cancelled")
+  - Small-amount cluster: recurring charges under $10/month — often free trials that converted
+  - Duplicates: two services doing the same thing (two streaming-music services, Netflix on two cards)
+  - Anything in the **Media** group (Streaming, Music, Software, News, Books, Movies, Games) — these are the discretionary subs most likely to drift forgotten. The user's *bills* group, *housing* group, *insurance* group are not.
+
+  **The headline number for this section is the annualized total of just this set**, not all recurring expenses.
+
+- **Price-creep on known subscriptions** — series where the latest charge differs noticeably from the historical average. Even subs the user knows about are worth a look if the price has crept up; many users don't notice the +$2/mo bumps.
+
 - **Bundled-billing parties** — for any party matching `apple.com/bill`, `Apple Inc`, `GOOGLE *`, `Google Play`, note in one line that the charge may bundle multiple subscriptions and tell the user where to look (iPhone: Settings > [name] > Subscriptions; web: appleid.apple.com or play.google.com). Don't pretend to know what's inside.
-- **Duplicates** — two services that do the same thing (Spotify charged twice, Netflix on two cards, two music streaming services). Worth surfacing as a one-liner save.
+
+- **Total recurring spend (context only)** — at the end of the section, give the gross monthly recurring expense for completeness. But frame it as context, not a leak: "your total recurring spend is $X/month — most of that is rent, insurance, and bills you already know about." This calibrates expectations and avoids the report claiming a six-figure "leak" that's mostly the user's mortgage.
 
 ### 2. Fee leaks — categories first
 
@@ -169,7 +179,13 @@ If the user's transactions are categorized, both groups are detectable in one ca
 }
 ```
 
-That returns each provider with annual total and transaction count. No keyword search, no false positives, no shotgun.
+That returns each provider with annual total and transaction count. No keyword search, no shotgun.
+
+**Inspect the rows before reporting the headline number.** Both categories regularly catch things that aren't actually predatory:
+
+- **Paybacks, not borrowing.** Rows like `Payment Thank You-Mobile`, `Payment Thank You - Web`, or `Direct Debit: <Bank>, Payment` are the user *paying back* a card or BNPL plan. These are not new loans and don't belong in the leak total. Filter them out of the BNPL & Installments figure or note the split. (Big credit-card autopays sometimes land in `Cash Advance` too — same rule.)
+- **Personal/installment loans aren't BNPL or EWA.** Lendmark, Mariner, OneMain, Plain Green, World Finance, RISE Credit — these are traditional installment loans, not the small-bore predatory stack the section is meant to surface. Worth flagging if the user is carrying one (that's a debt they may want to discuss), but don't lump them in with EWA/payday APR-shaming.
+- **Inbound EWA disbursements vs. outbound fees.** EWA apps deposit the advance (inbound) and later debit the payback (outbound). The advance principal isn't a leak. The *fees and tips* on top are. If the user's data has clean inflow/outflow signs, headline outflows minus inbound principal; if not, just split the rows by direction in the report.
 
 **For BNPL specifically: stacking signal.** If 3+ distinct BNPL providers show activity in the last 90 days, flag it. Stacking correlates strongly with overdraft and impulsivity research. Run a 90-day version of the same query to check.
 
@@ -190,6 +206,12 @@ Cashflow seeds a `Gambling` category under `Entertainment`. The Plaid PFC mappin
 ```
 
 That returns each gambling counterparty (sportsbook, casino, lottery, daily-fantasy site) with annual total and transaction count.
+
+**Sanity-check the rows before headlining a number.** The Gambling category routes off Plaid's PFC, which is broad. Watch for:
+
+- **Vegas-vacation false positives.** A single large charge with `LAS VEGAS NV` in the description and no other gambling activity is more likely a hotel/restaurant on a trip than a casino-floor loss. If one row dominates the total and lives geographically (Vegas, Atlantic City, Reno), call it out as "looks like a single trip — could be lodging or dining mis-tagged" rather than reporting it as ongoing gambling spend.
+- **Sweepstakes / skill-gaming apps.** Plaid PFCs apps like Papaya Gaming, AviaGames, Bingo Cash, Solitaire Cash, Funzpoints, Jackpota, and Blitz Win Cash as gambling. They are technically gambling-adjacent (sweepstakes-casino model), but most users wouldn't describe them as "gambling." Report them in their own bucket — "casual gaming/sweepstakes" — and don't apply the escalation/NCPG framing to them. Reserve that framing for clear sportsbook, casino, or daily-fantasy activity.
+- **Obvious mis-tags.** If the party name doesn't fit any gambling pattern at all (e.g., a foreign bakery, a generic merchant), flag it as likely Plaid-PFC error and exclude from the total. Don't pretend the data is right just because the category says so.
 
 **Fallback — top-parties scan.** Use this only when the category query returns empty. Some historical transactions predate the Gambling category seed; some merchants get mis-tagged by Plaid; some users may have gambling activity flowing through a peer-payment app (Venmo to a bookie) that won't carry a gambling PFC.
 
@@ -277,9 +299,14 @@ Skip the rest (orphan parties, empty categories — those are tidiness, not leak
 
 Lead the final report with:
 
-- **Total annualized leak** across all sections — one number, in dollars
+- **Total annualized leak** — one number, in dollars. Sum these and only these:
+  - Section 1's *forgotten/zombie/duplicate* subset (NOT total recurring spend — rent, insurance, and bills are not leaks)
+  - Section 2 fees, 12m
+  - Section 3 interest, 12m net of reversals
+  - Section 4 BNPL/Cash Advance fees and net outflows (after excluding paybacks and personal loans, per section 4's filters)
+  - Section 5 gambling, after excluding sweepstakes apps and any flagged Vegas-vacation false positives
 - **Three biggest line items** by annual cost
-- **The single highest-leverage move** — usually one thing dominates (paying off the high-interest card, switching cards for foreign-tx fees, cancelling the duplicate sub, pruning the streaming stack). Surface it explicitly so the user doesn't have to scan the whole report to find it. **Follow the numbers — if subscriptions are bigger than fees + interest combined, the biggest move is in the stack, not the cards. Don't lead with fees just because that's section 2.**
+- **The single highest-leverage move** — usually one thing dominates (paying off the high-interest card, switching cards for foreign-tx fees, cancelling the duplicate sub, pruning the streaming stack). Surface it explicitly so the user doesn't have to scan the whole report to find it. **Follow the numbers — if discretionary subs are bigger than fees + interest combined, the biggest move is in the stack, not the cards. Don't lead with fees just because that's section 2.**
 - **Anything urgent** — escalating gambling pattern, BNPL stacking, chronic overdrafts, very high interest cost
 
 ## Output format
