@@ -55,6 +55,8 @@ Returns active recurring expense series. From the response:
 
 ### 2. Fee leaks — categories first
 
+**Fees and interest are different problems.** Fees (overdraft, ATM, late, foreign-transaction) are friction — the goal is zero. Interest is the cost of carrying debt — the goal is paying down balances, not switching cards. Keep them in separate queries so the report can speak to them differently. Don't bundle `Interest Charges` / `Finance Charges` into the fees query below; those belong in section 3.
+
 Use the category list from step 0. Pick the categories that look fee-related, then one grouped query:
 
 ```json
