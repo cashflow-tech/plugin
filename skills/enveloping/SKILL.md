@@ -104,12 +104,12 @@ When two earners contribute to one hub at different cadences (Adam biweekly, Mar
 Lead with the headline number. Two shapes depending on what you found:
 
 **No system yet (most users):**
-> Your monthly non-discretionary spend is about **$X**. You take home roughly **$Y** every two weeks, so to keep bills covered you'd move **$Z per paycheck** into a separate "bill pay" account. Whatever stays in your main checking is then yours to spend without thinking.
+> Your monthly non-discretionary spend is about **$X** — that's **W%** of your monthly take-home (Sethi's CSP targets Fixed Costs at 50–60%; you're [in range / over / under]). You take home roughly **$Y** every two weeks, so to keep bills covered you'd move **$Z per paycheck** into a separate "bill pay" account. Whatever stays in your main checking is then yours to spend without thinking.
 >
 > You don't have a bill pay account today. The simplest setup: open a second checking account at your existing bank (same login, no new app), set up an automatic transfer the day after payday for $Z, then move every bill autopay to draft from the new account.
 
 **System exists:**
-> You're already running a bill pay setup — **\<Account Name\>** is the hub. \<Funded by X from \<source\>, Y from \<source\>\>. Recurring outflow is **$X/mo**, total inflow is **$Y/mo**, so the hub is \<over/under/right\>-funded by **$Z/mo** on the recurring view.
+> You're already running a bill pay setup — **\<Account Name\>** is the hub. \<Funded by X from \<source\>, Y from \<source\>\>. Recurring outflow is **$X/mo** (**W%** of your $Y/mo take-home; Sethi's CSP target for Fixed Costs is 50–60%), so the hub is \<over/under/right\>-funded by **$Z/mo** on the recurring view.
 >
 > [If sweep is too low: name the gap, suggest a new amount.]
 > [If sweep looks high but the hub balance is still flat: non-recurring stuff (variable bills, anomalies) is consuming the apparent surplus — the system is matching real outflow even if recurring sums don't show it. Reconcile against the actual current balance before recommending a change.]

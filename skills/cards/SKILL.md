@@ -13,6 +13,20 @@ Most people leave 1-3% on the table by swiping the wrong card. A person spending
 
 ## Workflow
 
+### Step 0: Check whether you're paying interest first
+
+Before any rewards math, check the user's interest cost on their cards:
+
+```json
+query { "period": "trailing_3m", "category": "Interest Charges", "by": ["account"] }
+```
+
+If any card has interest charges in the trailing 3 months, **stop the rewards workflow and lead with that.** A revolver paying ~22% APR on a $5k balance owes ~$1,100/yr in interest — no card swap recommendation can save more than that, so optimizing rewards while carrying a balance is rearranging deck chairs. Frame it as: "You're paying ~$X/mo in interest, which dwarfs anything I can save you on rewards. The right next step is `/debt`, not `/cards`. Want to switch?"
+
+If the user insists on continuing the rewards optimization despite carrying a balance, proceed — but call out in the final output that the rewards math assumes pay-in-full going forward.
+
+If interest charges are zero, proceed to Step 1.
+
 ### Step 1: Discover the user's cards
 
 Fetch accounts to find credit cards:
