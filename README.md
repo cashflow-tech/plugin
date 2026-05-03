@@ -33,11 +33,13 @@ Three tools connected to [cashflow.tech](https://cashflow.tech) via OAuth:
 |-------|-----------------|
 | **recap** | "monthly recap", "how did I do this month", "spending summary", "quarterly review" |
 | **tidy** | "tidy up", "categorize uncategorized", "clean up transactions" |
-| **trips** | "tag travel", "organize trips", "trip tagging" |
-| **burn** | "burn rate", "runway", "how long will my money last" |
-| **fishy** | "anything fishy", "suspicious charges", "audit my spending" |
+| **leaks** | "where am I leaking money", "audit my subscriptions", "anything fishy", "find hidden charges", "fees" |
+| **burnrate** | "burn rate", "recurring bills", "what do I pay for", "monthly obligations" |
+| **enveloping** | "envelope budgeting", "paycheck splitting", "separate bills from spending", "what's safe to spend" |
+| **debt** | "pay off debt", "snowball vs avalanche", "when will I be debt free", "how much is my debt costing me" |
 | **cards** | "optimize credit cards", "card rewards", "which card should I use" |
-| **optimize-subs** | "audit subscriptions", "optimize subscriptions", "cancel subscriptions" |
+| **trips** | "tag travel", "organize trips", "trip tagging" |
+| **benefits** | "am I missing any benefits", "do I qualify for SNAP", "money is tight" |
 | **setup** | First-time onboarding and account setup |
 
 ## How it works
@@ -53,9 +55,11 @@ Three tools connected to [cashflow.tech](https://cashflow.tech) via OAuth:
 - "What are my recurring bills?"
 - "Tidy up my uncategorized transactions"
 - "Show me my spending by category for the last 3 months"
-- "Is there anything fishy in my transactions?"
+- "Where am I leaking money?"
 - "Audit my subscriptions — what am I paying for?"
 - "What's my burn rate?"
+- "Snowball vs avalanche — what's the fastest way to pay off my debt?"
+- "Help me set up envelope budgeting"
 - "Tag my recent travel expenses"
 
 ## Links
