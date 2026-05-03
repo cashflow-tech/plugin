@@ -1,5 +1,5 @@
 ---
-name: optimize-cards
+name: cards
 description: Triggered by "optimize my cards", "which card should I use", "card recommendations", "maximize points", "credit card optimizer", "best card for", "rewards optimization", "point optimization", "card strategy", "am I using the right card". Use this skill whenever the user asks about credit card rewards, points, cashback optimization, or which card to use for purchases — even if they don't say "optimize" explicitly.
 ---
 
@@ -161,6 +161,6 @@ Use this to suggest reward structures when the user confirms their cards. These 
 - Amazon Prime Visa: 5% Amazon/Whole Foods, 2% restaurants/gas/transit, 1% other
 - Discover It: 5% rotating quarterly, 1% other
 
-## Optimize-cards-specific notes
+## Cards-specific notes
 
 Give clear numbers and specific actions. Don't caveat everything to death. If a card swap saves $15/year, say so and let the user decide whether it's worth the hassle; if there's a $500/year opportunity, make sure it stands out. (General voice guidance lives in the system prompt.)
