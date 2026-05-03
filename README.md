@@ -33,10 +33,10 @@ Three tools connected to [cashflow.tech](https://cashflow.tech) via OAuth:
 |-------|-----------------|
 | **recap** | "monthly recap", "how did I do this month", "spending summary", "quarterly review" |
 | **tidy** | "tidy up", "categorize uncategorized", "clean up transactions" |
-| **tag-trips** | "tag travel", "organize trips", "trip tagging" |
+| **trips** | "tag travel", "organize trips", "trip tagging" |
 | **burn** | "burn rate", "runway", "how long will my money last" |
 | **fishy** | "anything fishy", "suspicious charges", "audit my spending" |
-| **optimize-cards** | "optimize credit cards", "card rewards", "which card should I use" |
+| **cards** | "optimize credit cards", "card rewards", "which card should I use" |
 | **optimize-subs** | "audit subscriptions", "optimize subscriptions", "cancel subscriptions" |
 | **setup** | First-time onboarding and account setup |
 

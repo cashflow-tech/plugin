@@ -1,9 +1,9 @@
 ---
-name: tag-trips
+name: trips
 description: Cluster travel transactions into trips using date/location signals and email confirmations, then tag them in bulk. Triggered by "tag travel", "tag trips", "travel expenses", "organize trips", "trip tagging", "which trip was this". Use this skill whenever the user wants to organize travel spending by trip, figure out which trip a charge belongs to, or get a breakdown of trip costs.
 ---
 
-# Tag Trips
+# Trips
 
 Tag travel expenses with trip names. Two phases: silently cluster transactions into candidate trips, then present the full grouping to the user for review.
 
@@ -27,7 +27,7 @@ After the user reviews and approves groupings, work through the tasks — tag ea
 
 ## Scratchpad
 
-Optionally maintain `/tmp/tag-trips.md` with a table of confirmed (tagged) trips for quick reference:
+Optionally maintain `/tmp/trips.md` with a table of confirmed (tagged) trips for quick reference:
 
 ```
 | Tag | Destination | Start | End |
