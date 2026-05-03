@@ -32,31 +32,37 @@ Burn rate is the floor — the minimum you spend each month before any discretio
    { "recurring": true, "compare": "prior_period" }
    ```
 
-4. **Compute the burn rate.** Sum all active recurring series by frequency:
+4. **Fetch take-home for % framing.** Pull paychecks so you can express burn as a share of income:
+   ```json
+   { "paychecks": true }
+   ```
+
+5. **Compute the burn rate.** Sum all active recurring series by frequency:
    - Monthly items: use amount directly
    - Weekly items: multiply by 4.33
    - Annual items: divide by 12
    - Present the **total monthly burn** as a single headline number
+   - **Frame as % of take-home**: divide total monthly burn by `paychecks.totals.monthly_avg` and present as "$X/mo = Y% of your take-home." Sethi's Conscious Spending Plan targets Fixed Costs at 50–60% of take-home — over 60% means the user is structurally over-committed; under 50% means there's slack for savings/investing. **Skip the % line entirely** if `paychecks.totals.monthly_avg` is missing, near zero, or `irregular_income_90d` is large relative to it (variable income makes the ratio meaningless).
 
-5. **Classify obligations.** Break recurring items into two groups:
+6. **Classify obligations.** Break recurring items into two groups:
    - **Fixed obligations** (non-discretionary): rent/mortgage, utilities, insurance, loan payments, property tax, car payment — things you can't easily cancel
    - **Discretionary recurring** (subscriptions): streaming, gym, software, meal kits, memberships — things you could cancel tomorrow
    - Present each group's total and percentage of burn
 
-6. **Break down by category group.** Within each classification, show each group's contribution:
+7. **Break down by category group.** Within each classification, show each group's contribution:
    - Group name → monthly total → % of burn → item count
    - Sort by monthly total descending
 
-7. **Flag notable items:**
+8. **Flag notable items:**
    - Largest single recurring charge
    - Any items that **increased in amount** recently (compare current amount to historical average — Cashflow's recurring series tracks amount variance)
    - Inactive series that may still be charging (last seen recently but marked inactive)
    - New recurring charges that appeared in the last 30-60 days
    - Charges that seem duplicative (e.g., two streaming music services)
 
-8. **Upcoming charges.** From the forecast, list the next 5 charges due with dates and amounts.
+9. **Upcoming charges.** From the forecast, list the next 5 charges due with dates and amounts.
 
-9. **Month-over-month delta.** If comparison data is available, report:
+10. **Month-over-month delta.** If comparison data is available, report:
    - Net change in monthly burn vs. prior period
    - Which specific items drove the change (new additions, cancellations, price increases)
 
