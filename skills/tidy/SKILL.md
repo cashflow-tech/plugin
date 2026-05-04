@@ -51,10 +51,14 @@ Use the period from `$ARGUMENTS` (e.g. "this month", "last 30 days"), or `last_9
 
 Start with the highest-value uncategorized transactions — they have the most impact on accuracy.
 
-1. **Fetch top 10 uncategorized expenses by amount:**
+1. **Fetch top uncategorized expenses by amount.** Run two queries — one for transactions whose category is null, and one for transactions sitting in the catch-all `Uncategorized` group (e.g. `Other Expense`, the Plaid-fallback bucket). Both are functionally untriaged; merge the results and work the top 10 by amount.
+
    ```json
    query { "detail": true, "is_uncategorized": true, "type": "expense", "period": "<period>", "limit": 10, "sort": "-amount" }
+   query { "detail": true, "group": "Uncategorized", "type": "expense", "period": "<period>", "limit": 10, "sort": "-amount" }
    ```
+
+   In current production data, the first query almost always returns 0 — Plaid auto-routes anything without a category to `Uncategorized | Other Expense`, which only the second query sees.
 
 2. **Research each transaction** using the merchant research steps above. For each, determine:
    - What the merchant/party is
