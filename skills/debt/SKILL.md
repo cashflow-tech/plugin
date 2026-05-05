@@ -55,7 +55,7 @@ Issue these in one tool-use turn:
 - `query { "include": ["accounts"] }` — find `credit_card` and `loan` accounts and their balances
 - `query { "recurring": true }` — recurring outflows; many will be debt payments
 - `query { "by": ["party"], "type": "expense", "period": "trailing_12m", "search": "INTEREST CHARGE" }` — interest hits per lender. **Description search is the primary path here.** The `Interest Charges` category is often empty in production data even when interest is being paid.
-- `query { "period": "trailing_12m", "type": "budget", "include": ["ratios"] }` — surplus signal for Step 5. Use `trailing_12m` (not `trailing_3m`, which often collapses to a partial current month). `type: "budget"` excludes transfers and investment flows so the income figure isn't polluted by Schwab/Fidelity transfers for users with brokerage activity.
+- `query { "period": "trailing_12m", "type": "pnl", "include": ["ratios"] }` — surplus signal for Step 5. Use `trailing_12m` (not `trailing_3m`, which often collapses to a partial current month). `type: "pnl"` excludes transfers and investment flows so the income figure isn't polluted by Schwab/Fidelity transfers for users with brokerage activity.
 
 If the description-search returns nothing, also try `"FINANCE CHARGE"` and `"PURCHASE INTEREST"` (some lenders use different wording), then fall back to `query { "by": ["party"], "type": "expense", "period": "trailing_12m", "category": "Interest Charges" }`. If everything's empty, accept that interest isn't measurable for this user and say so in the headline.
 
@@ -112,9 +112,9 @@ One question:
 
 > "Above the minimums, how much can you put toward debt each month?"
 
-If they don't know, use the surplus already pulled in Step 1 — `trailing_12m` with `type: "budget"` so investment transfers don't pollute it. Float it: "Over the past year you've had about $X/mo left after expenses. Want to use that, a different number, or run both?" Don't insist on a number.
+If they don't know, use the surplus already pulled in Step 1 — `trailing_12m` with `type: "pnl"` so investment transfers don't pollute it. Float it: "Over the past year you've had about $X/mo left after expenses. Want to use that, a different number, or run both?" Don't insist on a number.
 
-Sanity-check the income figure before quoting. If trailing-12m income looks impossibly large (e.g., millions), there are likely investment transfers leaking past the `budget` filter — surface that and ask the user what number to use instead of fabricating a throw amount.
+Sanity-check the income figure before quoting. If trailing-12m income looks impossibly large (e.g., millions), there are likely investment transfers leaking past the `pnl` filter — surface that and ask the user what number to use instead of fabricating a throw amount.
 
 If the answer is zero, the simulator still runs — it just shows the minimums-only path with no acceleration. That's still useful: it gives the debt-free date as a function of doing nothing differently.
 

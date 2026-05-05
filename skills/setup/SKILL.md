@@ -20,7 +20,7 @@ Issue all seven in a **single tool-use turn (parallel calls)**:
 - `query { "flows": true }`
 - `query { "recurring": true }`
 - `query { "by": ["group"], "type": "expense", "period": "last_90d", "top": 15 }`
-- `query { "by": ["group"], "granularity": "monthly", "periods": 1, "type": "budget", "nest": { "by": "party", "top": 5 } }` — current-month P&L with the top 5 parties expanded inside each group, so you can see what's actually driving each bucket without a follow-up call.
+- `query { "by": ["group"], "granularity": "monthly", "periods": 1, "type": "pnl", "nest": { "by": "party", "top": 5 } }` — current-month P&L with the top 5 parties expanded inside each group, so you can see what's actually driving each bucket without a follow-up call.
 - `admin { "entity": "rule", "action": "list" }`
 
 If existing rules already cover the obvious gaps, focus the rest of the pass on what's still rough.
