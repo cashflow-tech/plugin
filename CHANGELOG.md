@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.4.1 (2026-10-22)
+
+- trips: load existing trips from one paged `tag_report` call instead of one query per tag; cap cashflow calls at 3 per message; bound per-trip detail to the trip's dates; report every trip in one call
+
 ## 0.4.0 (2026-04-14)
 
 ### New Skills
