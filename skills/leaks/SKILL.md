@@ -39,29 +39,51 @@ The report has eight sections. Run them in order. Each is independent — if a s
 
 ### 1. Subscription leaks
 
+One call does the finding. Cashflow decides what a subscription is, what kind it is, what competes, what is paid twice, what stopped and what looks new. Don't re-derive any of it from `recurring` or from detail rows: the read and this skill must agree.
+
 ```json
-{ "recurring": true, "type": "expense" }
+{ "subscriptions": true }
 ```
 
-Returns *all* active recurring expense series — including rent, utilities, insurance, car payments, gym, and bills the user is well aware of. **Most of that isn't a leak.** The user knows they pay rent. They don't know they're still paying $14.99/mo for a tennis-stats app they signed up for two years ago.
+A subscription is a live recurring charge in Media (any) or Health › Gym. Its category decides, so the person moves one in or out by recategorizing. Bills — rent, utilities, insurance, loans — are never in it, so there is no rent-sized "leak" to explain away.
 
-The audit is about the *forgotten* recurring spend — services the user wouldn't immediately list if you asked them what they pay every month. Don't headline the gross recurring total. Lead with the forgotten/zombie/price-creep set instead, and treat the rest as context.
+Surface, in order (skip what's absent):
 
-From the response, surface (in order):
+- **`twice`** — one service paid on two series this cycle (two Audible memberships, Spotify Family and Individual, Google One on two cards). The clearest leak. Name both charges and accounts.
+- **`overlap`** — competing services side by side, with the combined monthly and yearly cost ("Netflix, Hulu and Peacock: $46 a month"). Ask whether they still use each. Never tell them to cancel; keeping both is often deliberate. `bundled` names one they pay for that another already includes ("Amazon Prime includes Prime Video").
+- **`looks_new`** — two or three month-apart charges that detection hasn't confirmed yet: often a trial that became paid. Ask whether it's theirs. A charge they tag `one-time` drops out.
+- **Price changes** — any item with `price { was, now, since }`.
+- **`stopped`** — listed but no charge in two cycles. Usually cancelled already; offer to mark it ended.
+- **`check_category`** — a known subscription service filed under another category. Offer to recategorize it so it's counted.
+- **`billed_through.apple` / `.google`** — see "Apple bills" below.
 
-- **Forgotten/zombie subscriptions — the actual leak.** Services the user has likely lost track of. Heuristics:
-  - Inactive series with a charge in the last 30 days ("I thought I cancelled")
-  - Small-amount cluster: recurring charges under $10/month — often free trials that converted
-  - Duplicates: two services doing the same thing (two streaming-music services, Netflix on two cards)
-  - Anything in the **Media** group (Streaming, Music, Software, News, Books, Movies, Games) — these are the discretionary subs most likely to drift forgotten. The user's *bills* group, *housing* group, *insurance* group are not.
+**The headline number for this section** is the yearly cost of `twice` plus anything they say they don't use. `total.yearly` is context ("you pay $1,140 a year in subscriptions"), not a leak.
 
-  **The headline number for this section is the annualized total of just this set**, not all recurring expenses.
+#### Apple bills
 
-- **Price-creep on known subscriptions** — series where the latest charge differs noticeably from the historical average. Even subs the user knows about are worth a look if the price has crept up; many users don't notice the +$2/mo bumps.
+Apple bills every App Store subscription — and one-off purchases — under one name, so the bank can't say which apps. `billed_through.apple.not_in_list` is the Apple money no listed subscription explains.
 
-- **Bundled-billing parties** — for any party matching `apple.com/bill`, `Apple Inc`, `GOOGLE *`, `Google Play`, note in one line that the charge may bundle multiple subscriptions and tell the user where to look (iPhone: Settings > [name] > Subscriptions; web: appleid.apple.com or play.google.com). Don't pretend to know what's inside.
+**If you can search the person's email:**
 
-- **Total recurring spend (context only)** — at the end of the section, give the gross monthly recurring expense for completeness. But frame it as context, not a leak: "your total recurring spend is $X/month — most of that is rent, insurance, and bills you already know about." This calibrates expectations and avoids the report claiming a six-figure "leak" that's mostly the user's mortgage.
+1. Search `from:no_reply@email.apple.com subject:"Your receipt from Apple."` over the last 120 days.
+2. Match a receipt to a charge in `billed_through.apple.recent` by **the same total on the same day** (allow one day for a card that posts late).
+3. Read the items. A line reading **"Renews \<date\>"** is a subscription; its plan line says the cadence ("(Monthly)", "(7 Days)"). Anything else — usage credits, rentals, in-app purchases — is a one-off. One receipt can hold both.
+4. "Apple Account" on the receipt says whose it is. That is the only way to see two people's subscriptions on one card.
+5. Receipts come in two formats. The newer one reads fine as plain text. The older table format loses its line items in plain-text conversion: read its HTML, and only for receipts that match a charge you need to explain (they run ~11k tokens each).
+6. About half of Apple charges have no receipt email: renewal receipts are opt-in. Say so, and send them to iPhone Settings › [name] › Subscriptions (or reportaproblem.apple.com) for the rest.
+7. With their OK, remember what you found, using service names only — never an Apple account email:
+   - a receipt names the app behind an Apple series in the list → `admin { entity: "recurring_series", action: "rename", id, new_name: "Canva Pro (Apple)" }`;
+   - an app billed alone on its renewal day each time, with no series → `admin { entity: "recurring_series", action: "create", name, frequency, transaction_ids }` from the matched `recent[].id`s. A subscription that only ever arrives inside a mixed receipt can't be declared — say what it costs and stop.
+
+**Without email:** say how much Apple bills that the list can't explain, and where to look (iPhone Settings › [name] › Subscriptions; Android: play.google.com → Subscriptions). Don't guess app names from amounts.
+
+#### Cancelling
+
+Only when the person asks, one service at a time, with their explicit go-ahead for each — never because two services overlap.
+
+- `via: "apple"` or `"google"` means it's cancelled at Apple or Google, **not on the service's own site**. This is the commonest way a cancellation silently fails.
+- If you can use a browser, cancel and report exactly what the site confirmed. Otherwise tell them where to cancel, and to do it before `next`.
+- Afterwards, give the yearly saving (the item's `yearly`) and when it should stop, then `admin { entity: "recurring_series", action: "update", id, active: false }`. If it charges again, it comes back by itself on the next review.
 
 ### 2. Fee leaks — categories first
 
@@ -257,7 +279,7 @@ Reporting rules (from the system prompt):
 - **For severe escalation OR clear paycheck-correlation OR daily activity**, mention the NCPG helpline once: 1-800-MY-RESET, ncpgambling.org/chat. Don't repeat. Don't lecture. Don't diagnose.
 - For modest, infrequent activity (e.g., occasional lottery ticket), just report the number — no helpline.
 
-### 6. Unintended leaks — anomalies and duplicates
+### 6. Unintended leaks — anomalies and double charges
 
 Anomalies appear automatically inside summary-mode output (in the `anomalies` field with `large_unusual`, `large_new_merchant`, `price_changes` sub-fields). No `include` parameter needed.
 
@@ -267,14 +289,14 @@ Anomalies appear automatically inside summary-mode output (in the `anomalies` fi
 
 Read the `anomalies` field from that response.
 
-For duplicate detection, fetch detail rows sorted by amount:
+For double charges (one purchase charged twice — not a subscription paid twice, which is section 1's `twice`), fetch detail rows sorted by amount:
 
 ```json
 { "detail": true, "period": "last_30d", "type": "expense", "sort": "-amount", "limit": 100 }
 ```
 
 Flag:
-- **Possible duplicates** — same amount, same day, different descriptions OR same party charged twice on the same day. Exclude known recurring (a weekly $15 charge from the same coffee shop is not a duplicate).
+- **Possible double charges** — same amount, same day, different descriptions OR same party charged twice on the same day. Exclude known recurring (a weekly $15 charge from the same coffee shop is not a duplicate).
 - **Unusually large from a familiar merchant** — appears in the `large_unusual` anomaly field; or detect manually by comparing detail rows to recent history of the same party
 - **Large charges from new merchants** — appears in the `large_new_merchant` anomaly field
 - **Price changes on recurring** — appears in the `price_changes` anomaly field
@@ -300,13 +322,13 @@ Skip the rest (orphan parties, empty categories — those are tidiness, not leak
 Lead the final report with:
 
 - **Total annualized leak** — one number, in dollars. Sum these and only these:
-  - Section 1's *forgotten/zombie/duplicate* subset (NOT total recurring spend — rent, insurance, and bills are not leaks)
+  - Section 1's `twice` plus any subscription the person says they don't use (NOT `total` — the subscriptions they use are not a leak)
   - Section 2 fees, 12m
   - Section 3 interest, 12m net of reversals
   - Section 4 BNPL/Cash Advance fees and net outflows (after excluding paybacks and personal loans, per section 4's filters)
   - Section 5 gambling, after excluding sweepstakes apps and any flagged Vegas-vacation false positives
 - **Three biggest line items** by annual cost
-- **The single highest-leverage move** — usually one thing dominates (paying off the high-interest card, switching cards for foreign-tx fees, cancelling the duplicate sub, pruning the streaming stack). Surface it explicitly so the user doesn't have to scan the whole report to find it. **Follow the numbers — if discretionary subs are bigger than fees + interest combined, the biggest move is in the stack, not the cards. Don't lead with fees just because that's section 2.**
+- **The single highest-leverage move** — usually one thing dominates (paying off the high-interest card, switching cards for foreign-tx fees, the subscription paid twice, a streaming overlap they confirm they don't need). Surface it explicitly so the user doesn't have to scan the whole report to find it. **Follow the numbers — if discretionary subs are bigger than fees + interest combined, the biggest move is in the stack, not the cards. Don't lead with fees just because that's section 2.**
 - **Anything urgent** — escalating gambling pattern, BNPL stacking, chronic overdrafts, very high interest cost
 
 ## Output format
@@ -328,7 +350,7 @@ If unclear, run the comprehensive audit. The headline number with a clear breakd
 ## Performance notes
 
 - **Cache the category list** from step 0 — don't re-fetch it for every section
-- **Run parallel searches in batches** — the recurring query, the category-grouped fee query, and the keyword-search batch (predatory + gambling merchants) can all run in parallel
+- **Run parallel searches in batches** — the subscriptions query, the category-grouped fee query, and the keyword-search batch (predatory + gambling merchants) can all run in parallel
 - **Prefer grouped queries over detail+sum** — when you need totals, ask for totals, don't pull rows and sum them yourself
 - **Watch for high-volume categories** — foreign-transaction fees can produce hundreds of micro-charges. Use the grouped total; don't iterate the detail list
 - **Keyword search with care** — short patterns false-positive. Inspect returned rows to confirm brand match before counting

@@ -10,13 +10,25 @@
     {
       "id": 2,
       "prompt": "audit my subscriptions. how much am i paying for things i'm not using?",
-      "expected_output": "Subscription-focused report (the $ARGUMENTS narrowing). Total monthly + annualized. Active series sorted by cost. Zombie series flagged. Price-creep. Small-amount cluster (likely-forgotten). Bundled-billing parties (Apple/Google) noted with where to look.",
+      "expected_output": "Subscription-focused report (the $ARGUMENTS narrowing) built on one { subscriptions: true } call, not re-derived from recurring or detail rows. Leads with twice (one service paid on two series), then overlap (competing services side by side, asked about, never 'cancel this'), bundled, looks_new, price changes, stopped and check_category. Yearly cost is the unit; total.yearly is context, not the leak. billed_through.apple.not_in_list is stated as Apple money the list can't explain, with where to look (iPhone Settings › name › Subscriptions) — no guessed app names.",
       "files": []
     },
     {
       "id": 3,
       "prompt": "anything fishy in my account in the last 30 days? something feels off but i can't put my finger on it",
-      "expected_output": "Short-period recent-anomaly focus. Surfaces possible duplicates, unusually-large charges, new-merchant large charges, recurring price changes. Calm tone, frames findings as 'worth a second look' not 'fraud.' Covers the old /fishy use case.",
+      "expected_output": "Short-period recent-anomaly focus. Surfaces possible double charges, unusually-large charges, new-merchant large charges, recurring price changes. Calm tone, frames findings as 'worth a second look' not 'fraud.' Covers the old /fishy use case.",
+      "files": []
+    },
+    {
+      "id": 4,
+      "prompt": "what am i actually paying apple for every month? you can look in my email",
+      "expected_output": "Calls { subscriptions: true }, then searches email for Apple receipts (from no_reply@email.apple.com, 'Your receipt from Apple.'), matching each to billed_through.apple.recent by the same total on the same day. Lines with 'Renews <date>' are subscriptions; usage credits, rentals and in-app purchases are one-offs. Says which charges have no receipt (renewal receipts are opt-in) and where to see the rest. Offers — and only with the person's OK — to rename a series to the app's name or declare one from matched transaction ids, with service names only, never an Apple account email.",
+      "files": []
+    },
+    {
+      "id": 5,
+      "prompt": "i'm paying for netflix, hulu and peacock. cancel the ones i don't need",
+      "expected_output": "Does not cancel anything on inference. Shows the three side by side with monthly and yearly cost from { subscriptions: true }, asks which ones to cancel, and acts on one service at a time only after an explicit yes. Says that a via:apple/google subscription is cancelled at Apple or Google, not on the service's site. With a browser, reports exactly what the site confirmed; without one, says where to cancel and to do it before the next charge date. After each cancel: the yearly saving, when it should stop, and recurring_series update active:false.",
       "files": []
     }
   ]

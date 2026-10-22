@@ -17,9 +17,10 @@ Burn rate is the floor — the minimum you spend each month before any discretio
 
 ## Workflow
 
-1. **Fetch recurring series.** Call the `query` MCP tool:
+1. **Fetch recurring series and the subscription review.** Call the `query` MCP tool twice, in one batch:
    ```json
    { "recurring": true }
+   { "subscriptions": true }
    ```
 
 2. **Fetch forecast.** Get the next 30 days of expected charges:
@@ -37,16 +38,13 @@ Burn rate is the floor — the minimum you spend each month before any discretio
    { "paychecks": true }
    ```
 
-5. **Compute the burn rate.** Sum all active recurring series by frequency:
-   - Monthly items: use amount directly
-   - Weekly items: multiply by 4.33
-   - Annual items: divide by 12
+5. **Compute the burn rate.** Use `recurring.totals.monthly_expenses`, plus `monthly_financing` when present (loan principal). It is already normalized to a month and counts live series only — don't re-sum the `series` list, which also lists series that stopped charging.
    - Present the **total monthly burn** as a single headline number
    - **Frame as % of take-home**: divide total monthly burn by `paychecks.totals.monthly_avg` and present as "$X/mo = Y% of your take-home." Sethi's Conscious Spending Plan targets Fixed Costs at 50–60% of take-home — over 60% means the user is structurally over-committed; under 50% means there's slack for savings/investing. **Skip the % line entirely** if `paychecks.totals.monthly_avg` is missing, near zero, or `irregular_income_90d` is large relative to it (variable income makes the ratio meaningless).
 
-6. **Classify obligations.** Break recurring items into two groups:
-   - **Fixed obligations** (non-discretionary): rent/mortgage, utilities, insurance, loan payments, property tax, car payment — things you can't easily cancel
-   - **Discretionary recurring** (subscriptions): streaming, gym, software, meal kits, memberships — things you could cancel tomorrow
+6. **Classify obligations.** Split the burn in two, using Cashflow's definition rather than your own:
+   - **Subscriptions** (could cancel tomorrow): `subscriptions.total.monthly` — every live subscription, by `kinds`
+   - **Fixed obligations** (rent/mortgage, utilities, insurance, loan payments, property tax, car payment): the burn minus that
    - Present each group's total and percentage of burn
 
 7. **Break down by category group.** Within each classification, show each group's contribution:
@@ -55,10 +53,10 @@ Burn rate is the floor — the minimum you spend each month before any discretio
 
 8. **Flag notable items:**
    - Largest single recurring charge
-   - Any items that **increased in amount** recently (compare current amount to historical average — Cashflow's recurring series tracks amount variance)
-   - Inactive series that may still be charging (last seen recently but marked inactive)
-   - New recurring charges that appeared in the last 30-60 days
-   - Charges that seem duplicative (e.g., two streaming music services)
+   - Subscriptions whose price changed: `price { was, now, since }` on `subscriptions` items
+   - Subscriptions listed but no longer charging: `subscriptions.stopped`
+   - New ones: `subscriptions.looks_new` (charges detection hasn't confirmed yet)
+   - Paid twice (`subscriptions.twice`) and competing services (`subscriptions.overlap`) — ask, don't tell them to cancel
 
 9. **Upcoming charges.** From the forecast, list the next 5 charges due with dates and amounts.
 
