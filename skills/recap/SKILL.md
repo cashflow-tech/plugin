@@ -57,7 +57,7 @@ Lead with the answer. Tables for numbers, prose for context. Skip categories wit
 - **Headline:** money in, money out, what's left. Dollars, not just percent.
 - **vs. prior period:** dollar AND percent change — but **suppress the percent** when `|vs_prior.pct| > ~1000%` or the prior period was tiny/partial. The math is meaningless. Describe qualitatively instead ("March had a one-off $50K deposit; April returned to baseline").
 - **vs. last year:** only if step 3 produced usable data. Otherwise skip silently.
-- **Anomalies + recurring bills.** Unusual transactions; new, changed, or cancelled subscriptions.
+- **Anomalies + recurring bills.** Unusual transactions. For subscriptions, read `{ "subscriptions": true }` rather than re-deriving them: `looks_new` items whose `first` falls in the recap period, items whose `price.since` falls in it, and `stopped`.
 - **Account balances.**
 
 **Lead with this — don't bury it — when it applies:**
