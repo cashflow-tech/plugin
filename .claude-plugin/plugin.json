@@ -7,6 +7,7 @@
     "url": "https://cashflow.tech"
   },
   "homepage": "https://cashflow.tech",
+  "privacyPolicyUrl": "https://cashflow.tech/privacy",
   "repository": "https://github.com/cashflow-tech/plugin",
   "license": "MIT",
   "keywords": [
