@@ -54,7 +54,8 @@ Look for shapes that mean the headline is wrong:
 Lead with the answer. Tables for numbers, prose for context. Skip categories with trivial amounts.
 
 **Always cover:**
-- **Headline:** money in, money out, what's left. Dollars, not just percent.
+- **Headline:** money in, money out, what's left. Dollars, not just percent. "What's left" is `income − expenses`, computed from the summary's own `income` and `expenses` — never `net`. `net` is the change in cash: it also counts transfers, investments and financing, so it can be far from income − spending. If you show it, label it as the change in cash after transfers, and never say "spent more than came in" about it.
+- **Counts match the list.** Any "N cards" / "N new subscriptions" in the text is the number of items you actually list or the rows in the response — count them, don't estimate.
 - **vs. prior period:** dollar AND percent change — but **suppress the percent** when `|vs_prior.pct| > ~1000%` or the prior period was tiny/partial. The math is meaningless. Describe qualitatively instead ("March had a one-off $50K deposit; April returned to baseline").
 - **vs. last year:** only if step 3 produced usable data. Otherwise skip silently.
 - **Anomalies + recurring bills.** Unusual transactions. For subscriptions, read `{ "subscriptions": true }` rather than re-deriving them: `looks_new` items whose `first` falls in the recap period, items whose `price.since` falls in it, and `stopped`.

@@ -65,6 +65,20 @@ Cover what needs the user's eyes. Pick the 2–4 most important items; don't bur
 - **Things that haven't been sorted yet** — large totals, the biggest single source of unsorted transactions.
 - **Oddities** — anything from the health check that needs a human read: deposits that look like income but might not be, unusually large transactions, a recurring charge that suddenly jumped in price. Phrase as questions: "There's a $5K transfer from \<name\> on April 9 — was that a one-off?"
 
+### Numbers in the review
+
+The review gets quoted back to the user later (the welcome email does), so every figure in it has to be one they can check.
+
+- **Money in vs money out is income − spending.** The summary from `query { "include": ["accounts"], "period": "last_90d" }` carries `income`, `expenses` and `net`. For any sentence that compares what came in with what went out ("spending ran ahead of income", "you kept about $X"), compute `income − expenses` yourself and state that. Never use `net` for it.
+- **`net` is the change in cash, not a shortfall.** It also counts transfers, investments and financing, and one-sided transfers (an account that isn't connected, a move across the period boundary) can push it far from income − spending. If you mention it at all, call it what it is and keep it apart from the income comparison. Never say "more than came in" or "spent more than you earned" about `net`.
+- **Counts come from the list, not from memory.** Before writing "N cards", "N accounts" or "N subscriptions", count the items you're naming. If you list eight cards, say eight. If you aren't naming them, count the rows in the response you're describing.
+
+Example, with `income` $14,200, `expenses` $15,900 and `net` −$2,350 over 90 days:
+
+- ✅ "Over the last three months about $15,900 went out against $14,200 coming in, so spending ran about $1,700 ahead of income. Your cash went down about $2,350 in that time; the extra is mostly transfers to accounts that aren't connected here."
+- ❌ "You spent $2,350 more than came in." (That's `net` — the change in cash — not income minus spending.)
+- ❌ "You use six different cards: Chase Sapphire, Freedom, Amex Gold, Citi Double Cash, Discover, Apple Card, Capital One, and Target RedCard." (Eight are listed.)
+
 ### Setup-specific tone notes
 
 (General voice guidance — plain English, no jargon, no archetypes, hedge guesses — lives in the system prompt.)
