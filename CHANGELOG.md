@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.5.1 (2026-11-04)
+
+- setup: money in vs money out is stated as income − spending from the summary's `income` and `expenses`, never `net`; `net` is labelled as the change in cash after transfers and never called "more than came in"; any "N cards" count comes from the list it names (#24)
+- recap: the headline's "what's left" is income − spending, not `net`; counts in the text match the list
+
 ## 0.5.0 (2026-10-22)
 
 - leaks: the subscription section starts from one `{ subscriptions: true }` call (Cashflow decides what a subscription is, what competes, what is paid twice, what stopped and what looks new) instead of re-deriving it from `recurring`; restores the Apple-receipt workflow (match receipts to `billed_through.apple.recent` by same day and total) and adds cancelling rules (one service at a time, with a yes; Apple-billed subscriptions are cancelled at Apple); "possible duplicates" in the anomalies section are now "possible double charges"
