@@ -2,7 +2,7 @@
   "mcpServers": {
     "cashflow": {
       "type": "http",
-      "url": "https://cashflow.tech/api/mcp"
+      "url": "https://cashflow.tech/api/mcp?via=plugin"
     }
   }
 }

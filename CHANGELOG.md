@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.5.2 (2026-11-15)
+
+- The MCP URL is now `https://cashflow.tech/api/mcp?via=plugin`, so Cashflow can count connections that come through the plugin separately from a connector added by hand (adam-messinger/cashflow#2969). The tag is for attribution only; sign-in and tools are unchanged.
+
 ## 0.5.1 (2026-11-04)
 
 - setup: money in vs money out is stated as income − spending from the summary's `income` and `expenses`, never `net`; `net` is labelled as the change in cash after transfers and never called "more than came in"; any "N cards" count comes from the list it names (#24)
