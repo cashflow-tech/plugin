@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.6.0 (2026-11-24)
+
+- taxes: new. One tax year for a preparer from one `{ tax_packet: true, year }` read: forms still outstanding, the recorded 1099 figures per holder, every gap and private exit, tax payments (with January's possible Q4 estimate), and the `next` list worked with the person: filing forms, confirming ones a title cannot name (`link_tax_forms`), recording 1099s with a dry run first, and the Form 8949 CSV. Falls back to the three reads it composes on an older connector. Never a tax calculation; never sends without a yes
+
 ## 0.5.1 (2026-11-04)
 
 - setup: money in vs money out is stated as income − spending from the summary's `income` and `expenses`, never `net`; `net` is labelled as the change in cash after transfers and never called "more than came in"; any "N cards" count comes from the list it names (#24)
