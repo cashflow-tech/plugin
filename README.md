@@ -42,6 +42,7 @@ Five tools connected to [cashflow.tech](https://cashflow.tech) via OAuth:
 | **debt** | "pay off debt", "snowball vs avalanche", "when will I be debt free", "how much is my debt costing me" |
 | **cards** | "optimize credit cards", "card rewards", "which card should I use" |
 | **trips** | "tag travel", "organize trips", "trip tagging" |
+| **taxes** | "tax season", "what tax forms am I missing", "tax packet", "what does my accountant need" |
 | **benefits** | "am I missing any benefits", "do I qualify for SNAP", "money is tight" |
 | **setup** | First-time onboarding and account setup |
 
